@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSound.API", "ScreenSound.API\ScreenSound.API.csproj", "{78B06666-BC3C-4DC3-B745-59DEBEB20940}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSound.Dados", "ScreenSound.Dados\ScreenSound.Dados.csproj", "{D6949022-CCFE-49DE-946A-6AB202FF9CF5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSound.Dominio", "ScreenSound.Dominio\ScreenSound.Dominio.csproj", "{367EEC05-92E1-403E-8AA2-AC04683D656E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSound.DominioTeste", "ScreenSound.DominioTeste\ScreenSound.DominioTeste.csproj", "{7EC29455-57AF-4902-AF9D-A251D7E52EF1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{367EEC05-92E1-403E-8AA2-AC04683D656E} = {367EEC05-92E1-403E-8AA2-AC04683D656E}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSound.Ioc", "ScreenSound.Ioc\ScreenSound.Ioc.csproj", "{0254706D-DEAD-4956-915E-402265A98268}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78B06666-BC3C-4DC3-B745-59DEBEB20940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78B06666-BC3C-4DC3-B745-59DEBEB20940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78B06666-BC3C-4DC3-B745-59DEBEB20940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78B06666-BC3C-4DC3-B745-59DEBEB20940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6949022-CCFE-49DE-946A-6AB202FF9CF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6949022-CCFE-49DE-946A-6AB202FF9CF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6949022-CCFE-49DE-946A-6AB202FF9CF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6949022-CCFE-49DE-946A-6AB202FF9CF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{367EEC05-92E1-403E-8AA2-AC04683D656E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{367EEC05-92E1-403E-8AA2-AC04683D656E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{367EEC05-92E1-403E-8AA2-AC04683D656E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{367EEC05-92E1-403E-8AA2-AC04683D656E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EC29455-57AF-4902-AF9D-A251D7E52EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EC29455-57AF-4902-AF9D-A251D7E52EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EC29455-57AF-4902-AF9D-A251D7E52EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EC29455-57AF-4902-AF9D-A251D7E52EF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0254706D-DEAD-4956-915E-402265A98268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0254706D-DEAD-4956-915E-402265A98268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0254706D-DEAD-4956-915E-402265A98268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0254706D-DEAD-4956-915E-402265A98268}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD459E57-56A8-4AB9-A59A-F7EAFB176530}
+	EndGlobalSection
+EndGlobal
