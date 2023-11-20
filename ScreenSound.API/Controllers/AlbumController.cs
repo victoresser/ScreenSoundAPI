@@ -22,8 +22,15 @@ namespace ScreenSound.API.Controllers
             _conversor = conversorMusicasDoAlbum;
         }
 
-        // GET: api/<AlbumController>
-        [HttpGet("pesquisar")]
+        /// <summary>
+        /// GET api/Banda/listar
+        /// </summary>
+        /// <param name="conversor"></param>
+        /// <param name="skip">Quantos registros pular? Padrão: 0</param>
+        /// <param name="take">Quantos registros pegar? Padrão: 10</param>
+        /// <param name="nome">Insira o nome da banda que deseja pesquisar</param>
+        /// <returns>Listagem de bandas registradas</returns>
+        [HttpGet("listar")]
         public async Task<IEnumerable<ListagemDeAlbuns>> Get(
             [FromServices] IConversorMusicasDoAlbum conversor,
             [FromQuery] int skip = 0,
@@ -38,7 +45,8 @@ namespace ScreenSound.API.Controllers
                 {
                     Nome = x.Nome,
                     Banda = x.Banda.Nome,
-                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum)
+                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
+                    Imagem = x.Imagem
                 }).Where(x => x.Nome.Equals(nome)).ToList();
 
                 return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
@@ -50,7 +58,46 @@ namespace ScreenSound.API.Controllers
                 {
                     Nome = x.Nome,
                     Banda = x.Banda.Nome,
-                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum)
+                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
+                    Imagem = x.Imagem
+                }).ToList();
+
+                return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
+            }
+
+            return new List<ListagemDeAlbuns> { };
+        }
+
+        [HttpGet("listarTopFive")]
+        public async Task<IEnumerable<ListagemDeAlbuns>> GetTopFive(
+            [FromServices] IConversorMusicasDoAlbum conversor,
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 5,
+            string? nome = null)
+        {
+            var albuns = await _albumRepositorio.Consultar();
+
+            if (albuns != null && nome != null)
+            {
+                var dto = albuns.Select(x => new ListagemDeAlbuns
+                {
+                    Nome = x.Nome,
+                    Banda = x.Banda.Nome,
+                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
+                    Imagem = x.Imagem
+                }).Where(x => x.Nome.Equals(nome)).ToList();
+
+                return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
+            }
+
+            if (albuns != null)
+            {
+                var dto = albuns.Select(x => new ListagemDeAlbuns
+                {
+                    Nome = x.Nome,
+                    Banda = x.Banda.Nome,
+                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
+                    Imagem = x.Imagem
                 }).ToList();
 
                 return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
@@ -60,7 +107,7 @@ namespace ScreenSound.API.Controllers
         }
 
         // GET api/<AlbumController>/5
-        [HttpGet("{id}")]
+        [HttpGet("listar/{id}")]
         public async Task<IActionResult> GetForId(int id)
         {
             var album = await _albumRepositorio.ObterPorId(id);
