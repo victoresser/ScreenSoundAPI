@@ -23,7 +23,7 @@ namespace ScreenSound.API.Controllers
         }
 
         /// <summary>
-        /// GET api/Banda/listar
+        /// GET: api/AlbumController/listar
         /// </summary>
         /// <param name="conversor"></param>
         /// <param name="skip">Quantos registros pular? Padrão: 0</param>
@@ -67,7 +67,15 @@ namespace ScreenSound.API.Controllers
 
             return new List<ListagemDeAlbuns> { };
         }
-
+        
+        /// <summary>
+        /// GET api/<AlbumController>/listarTopFive
+        /// </summary>
+        /// <param name="conversor"></param>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="nome"></param>
+        /// <returns></returns>
         [HttpGet("listarTopFive")]
         public async Task<IEnumerable<ListagemDeAlbuns>> GetTopFive(
             [FromServices] IConversorMusicasDoAlbum conversor,
@@ -106,7 +114,11 @@ namespace ScreenSound.API.Controllers
             return new List<ListagemDeAlbuns> { };
         }
 
-        // GET api/<AlbumController>/5
+        /// <summary>
+        /// GET api/AlbumController/5
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("listar/{id}")]
         public async Task<IActionResult> GetForId(int id)
         {

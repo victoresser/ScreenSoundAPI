@@ -23,15 +23,16 @@ namespace ScreenSound.API.Controllers
         }
 
         /// <summary>
-        /// GET: api/<BandaController>
+        /// GET: api/<BandaController>/listar
         /// </summary>
+        /// <param name="conversor">Conversor de albuns da banda</param>
         /// <param name="skip">Variável que determina a quantidade de registros que serão ignorados</param>
         /// <param name="take">Variável que determina a quantidade de registros que serão exibidos</param>
         /// <param name="nomeBanda">Nome da banda que se deseja listar</param>
         /// <returns></returns>
         [HttpGet("listar")]
         public async Task<IEnumerable<ListagemDeBandas>> Get(
-            [FromServices] IConversorAlbunsDaBanda _conversor,
+            [FromServices] IConversorAlbunsDaBanda conversor,
             [FromQuery] int skip = 0,
             [FromQuery] int take = 10,
             string? nomeBanda = null
@@ -45,7 +46,8 @@ namespace ScreenSound.API.Controllers
                 {
                     Nome = x.Nome,
                     Descricao = x.Descricao,
-                    Albuns = _conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda)
+                    Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
+                    Imagem = x.Imagem
                 }).Skip(skip).Take(take).ToList();
 
                 return dto.Any() ? dto : new List<ListagemDeBandas> { };
@@ -55,16 +57,25 @@ namespace ScreenSound.API.Controllers
             {
                 Nome = x.Nome,
                 Descricao = x.Descricao,
-                Albuns = _conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
+                Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
+                Imagem = x.Imagem
             }).Where(x => x.Nome.Equals(nomeBanda)).Skip(skip).Take(take).ToList();
 
             return dtos.Any() ? dtos : new List<ListagemDeBandas> { };
 
         }
-
+        
+        /// <summary>
+        /// GET api/BandaController/listarTopFive
+        /// </summary>
+        /// <param name="conversor"></param>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="nomeBanda"></param>
+        /// <returns></returns>
         [HttpGet("listarTopFive")]
         public async Task<IEnumerable<ListagemDeBandas>> GetTopFive(
-            [FromServices] IConversorAlbunsDaBanda _conversor,
+            [FromServices] IConversorAlbunsDaBanda conversor,
             [FromQuery] int skip = 0,
             [FromQuery] int take = 5,
             string? nomeBanda = null
@@ -78,7 +89,7 @@ namespace ScreenSound.API.Controllers
                 {
                     Nome = x.Nome,
                     Descricao = x.Descricao,
-                    Albuns = _conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
+                    Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
                     Imagem = x.Imagem
                 }).Skip(skip).Take(take).ToList();
 
@@ -89,7 +100,7 @@ namespace ScreenSound.API.Controllers
             {
                 Nome = x.Nome,
                 Descricao = x.Descricao,
-                Albuns = _conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
+                Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
                 Imagem = x.Imagem
             }).Where(x => x.Nome.Equals(nomeBanda)).Skip(skip).Take(take).ToList();
 
@@ -98,12 +109,12 @@ namespace ScreenSound.API.Controllers
         }
 
         /// <summary>
-        /// GET api/<BandaController>/5
+        /// GET api/<BandaController>/listar/5
         /// </summary>
         /// <param name="id">Id da Banda</param>
         /// <returns></returns>
         [HttpGet("listar/{id}")]
-        public async Task<IActionResult> GetForId(int id, [FromServices] IConversorAlbunsDaBanda _conversor)
+        public async Task<IActionResult> GetForId(int id, [FromServices] IConversorAlbunsDaBanda conversor)
         {
             var consulta = await _bandaRepositorio.ObterPorId(id);
 
@@ -116,30 +127,36 @@ namespace ScreenSound.API.Controllers
             {
                 Nome = consulta.Nome,
                 Descricao = consulta.Descricao,
-                Albuns = _conversor.ConverterParaListagemDeAlbuns(consulta.AlbunsDaBanda),
+                Albuns = conversor.ConverterParaListagemDeAlbuns(consulta.AlbunsDaBanda),
                 Imagem = consulta.Imagem
             };
 
             return Ok(dto);
         }
 
-        // POST api/<BandaController>
+        /// <summary>
+        /// POST api/<BandaController>/adicionarBanda
+        /// </summary>
+        /// <param name="nomeDaBanda"></param>
+        /// <param name="armazenadorBanda"></param>
+        /// <param name="imagem"></param>
+        /// <returns></returns>
         [HttpPost("adicionarBanda")]
-        public async Task<IActionResult> Post(string nomeDaBanda, [FromServices] IArmazenadorBanda _armazenadorBanda, string? imagem = "")
+        public async Task<IActionResult> Post(string nomeDaBanda, [FromServices] IArmazenadorBanda armazenadorBanda, string? imagem = "")
         {
             var dto = new Banda(nomeDaBanda)
             {
                 Imagem = imagem
             };
-            await _armazenadorBanda.Armazenar(dto);
-            return Ok(await Get(nomeBanda: nomeDaBanda, _conversor: _conversor));
+            await armazenadorBanda.Armazenar(dto);
+            return Ok(await Get(nomeBanda: nomeDaBanda, conversor: _conversor));
         }
 
         // PUT api/<BandaController>/5
         [HttpPut("editar/{id}")]
-        public async Task<IActionResult> Put(int id, string? nome, string? descricao, string? imagem, [FromServices] IArmazenadorBanda _armazenadorBanda)
+        public async Task<IActionResult> Put(int id, string? nome, string? descricao, string? imagem, [FromServices] IArmazenadorBanda armazenadorBanda)
         {
-            await _armazenadorBanda.Editar(id, nome, descricao);
+            await armazenadorBanda.Editar(id, nome, descricao);
             return Ok(await GetForId(id, _conversor));
         }
 

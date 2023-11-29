@@ -8,7 +8,7 @@ namespace ScreenSound.Dominio.Models.Bandas.Dto;
 public class ArmazenadorDeBandas : IArmazenadorBanda
 {
     private readonly IBandaRepositorio _bandaRepositorio;
-    private static readonly OpenAIAPI Client = new("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");
+    private static readonly OpenAIAPI Client = new("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");
     private static readonly OpenAI_API.Chat.Conversation? Chat = Client.Chat.CreateConversation();
 
     public ArmazenadorDeBandas(IBandaRepositorio bandaRepositorio)

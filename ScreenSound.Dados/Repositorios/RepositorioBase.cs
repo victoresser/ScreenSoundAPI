@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ScreenSound.Dominio;
+using ScreenSound.Dominio.Models;
 using ScreenSound.Dominio.Services;
 
 namespace ScreenSound.Dados.Repositorios;
@@ -22,11 +23,6 @@ public class RepositorioBase<TEntity> : IRepositorio<TEntity> where TEntity : En
     public virtual async Task<List<TEntity>> Consultar()
     {
         var query = Context.Set<TEntity>().ToListAsync();
-        
-        if (query == null)
-        {
-            return new List<TEntity>();
-        }
 
         return await query;
     }

@@ -1,8 +1,8 @@
-﻿using FluentValidation;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
 using FluentValidation.Internal;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ScreenSound.Dominio;
+namespace ScreenSound.Dominio.Models;
 
 public abstract class Entity<TEntity> : AbstractValidator<TEntity> where TEntity : Entity<TEntity>
 {

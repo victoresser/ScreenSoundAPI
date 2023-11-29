@@ -10,15 +10,13 @@ public class Banda : Entity<Banda>
     public string Descricao { get; set; }
     public DateTime DataDeCriacao { get; set; }
     public string? Imagem { get; set; }
-    public virtual ICollection<Album> AlbunsDaBanda { get; set; }
-    public virtual ICollection<Musica> MusicasDaBanda { get; set; }
+    public virtual ICollection<Album>? AlbunsDaBanda { get; set; }
+    public virtual ICollection<Musica>? MusicasDaBanda { get; set; }
 
     public Banda(string nome, string descricao = "", string? imagem = "")
     {
         Nome = nome;
         Descricao = descricao;
-        AlbunsDaBanda = new List<Album>();
-        MusicasDaBanda = new List<Musica>();
         Imagem = imagem;
     }
 
