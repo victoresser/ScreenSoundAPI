@@ -3,6 +3,8 @@ using ScreenSound.Dados;
 using ScreenSound.Dominio.Services;
 using ScreenSound.Ioc;
 
+namespace ScreenSound.API;
+
 internal class Program
 {
     private static void Main(string[] args)
@@ -16,9 +18,9 @@ internal class Program
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigin",
-                builder => builder.WithOrigins("http://localhost:4200")
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+                x => x.WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
         });
         StartupIoc.ConfigureServices(builder.Services);
 
@@ -34,17 +36,17 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
             app.Use(async (context, next) =>
-                    {
-                        await next.Invoke();
+            {
+                await next.Invoke();
 
-                        string method = context.Request.Method;
-                        var allowedMethodsToCommit = new string[] { "POST", "PUT", "DELETE" };
-                        var unitOfWork = context.RequestServices.GetService<IUnitOfWork>();
-                        if (allowedMethodsToCommit.Contains(method))
-                        {
-                            await unitOfWork.Commit();
-                        }
-                    });
+                var method = context.Request.Method;
+                var allowedMethodsToCommit = new string[] { "POST", "PUT", "DELETE" };
+                var unitOfWork = context.RequestServices.GetService<IUnitOfWork>();
+                if (allowedMethodsToCommit.Contains(method))
+                {
+                    if (unitOfWork != null) await unitOfWork.Commit();
+                }
+            });
         }
         
         app.UseCors("AllowSpecificOrigin");

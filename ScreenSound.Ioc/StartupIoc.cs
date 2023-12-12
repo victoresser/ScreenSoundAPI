@@ -23,5 +23,6 @@ public static class StartupIoc
         services.AddScoped<IArmazenadorBanda, ArmazenadorDeBandas>();
         services.AddScoped<IArmazenadorMusica, ArmazenadorDeMusicas>();
         services.AddScoped<IConversorAlbunsDaBanda, ConversorAlbunsDaBanda>();
-        services.AddScoped<IConversorMusicasDoAlbum, ConversorMusicasDoAlbum>();    }
+        services.AddScoped<IConversorMusicasDoAlbum, ConversorMusicasDoAlbum>();
+    }
 }
