@@ -8,16 +8,15 @@ namespace ScreenSound.Dominio.Models.Albuns;
 public class Album : Entity<Album>
 {
     public int BandaId { get; set; }
-    public DateTime DataDeCriacao { get; set; }
     public string? Imagem { get; set; }
-    public virtual Banda Banda { get; set; }
-    public virtual ICollection<Musica> MusicasDoAlbum { get; set; }
+    public virtual Banda? Banda { get; set; }
+    public DateTime DataDeCriacao { get; set; }
+    public virtual ICollection<Musica>? MusicasDoAlbum { get; set; }
 
     public Album(string nome, int bandaId, string? imagem = "")
     {
         Nome = nome;
         BandaId = bandaId;
-        MusicasDoAlbum = new List<Musica>();
         Imagem = imagem;
     }
 
@@ -48,18 +47,15 @@ public class Album : Entity<Album>
     {
         RuleFor(x => x.Nome)
             .NotEmpty()
-            .NotNull()
             .MaximumLength(255)
             .WithMessage(Resource.NomeAlbumInvalido);
 
         RuleFor(x => x.Banda)
             .NotEmpty()
-            .NotNull()
             .WithMessage(Resource.ArtistaInvalido);
 
         RuleFor(x => x.MusicasDoAlbum)
             .NotEmpty()
-            .NotNull()
             .WithMessage(Resource.MusicaInvalida);
 
         return ValidationResult.Equals(true);

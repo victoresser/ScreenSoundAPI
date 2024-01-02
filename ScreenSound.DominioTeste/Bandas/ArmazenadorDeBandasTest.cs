@@ -84,7 +84,7 @@ public class ArmazenadorDeBandasTest
         var bandaDto = SetupBandaDto();
         var banda = await BandaBuilder.Novo().BuildAsync();
         
-        _mockRepositorioBanda.Setup(r => r.ObterPorId(bandaDto.Id)).ReturnsAsync(banda);
+        _mockRepositorioBanda.Setup(r => r.ObterPorIdAsync(bandaDto.Id)).ReturnsAsync(banda);
 
         var resultado = await _armazenadorBanda.Editar(banda.Id, bandaDto.Nome, bandaDto.Descricao);
         Assert.Equal($"A banda {bandaDto.Nome} foi editada!", resultado);

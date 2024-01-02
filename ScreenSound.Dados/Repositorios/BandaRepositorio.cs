@@ -25,7 +25,7 @@ public class BandaRepositorio : RepositorioBase<Banda>, IBandaRepositorio
         return await query;
     }
 
-    public async Task<Banda> ObterPorId(int id)
+    public async Task<Banda> ObterPorIdAsync(int id)
     {
         var query = Context.Set<Banda>()
             .Where(x => x.Id == id)

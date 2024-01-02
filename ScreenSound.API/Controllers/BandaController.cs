@@ -116,7 +116,7 @@ namespace ScreenSound.API.Controllers
         [HttpGet("listar/{id}")]
         public async Task<IActionResult> GetForId(int id, [FromServices] IConversorAlbunsDaBanda conversor)
         {
-            var consulta = await _bandaRepositorio.ObterPorId(id);
+            var consulta = await _bandaRepositorio.ObterPorIdAsync(id);
 
             if (consulta == null)
             {
@@ -164,7 +164,7 @@ namespace ScreenSound.API.Controllers
         [HttpDelete("excluir/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var dto = await _bandaRepositorio.ObterPorId(id);
+            var dto = await _bandaRepositorio.ObterPorIdAsync(id);
             await _bandaRepositorio.Deletar(dto.Id);
             return NoContent();
         }

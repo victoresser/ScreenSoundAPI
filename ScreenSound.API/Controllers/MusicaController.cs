@@ -155,19 +155,14 @@ namespace ScreenSound.API.Controllers
                                               string nomeAlbum,
                                               [FromServices] IArmazenadorMusica _armazenadorMusica)
         {
-            Banda? banda = await _bandaRepositorio.ObterPorNome(nomeBanda);
-            Album? album = await _albumRepositorio.ObterPorNome(nomeAlbum);
+            var banda = await _bandaRepositorio.ObterPorNome(nomeBanda);
+            var album = await _albumRepositorio.ObterPorNome(nomeAlbum);
 
-            if (!string.IsNullOrWhiteSpace(nomeMusica))
-            {
-                if (banda != null && album != null)
-                {
-                    await _armazenadorMusica.Armazenar(nomeMusica, duracaoMusica, banda, album, disponibilidadeMusica);
-                    return Ok(await Get(nomeMusica));
-                }
-            }
+            if (string.IsNullOrWhiteSpace(nomeMusica)) return BadRequest(Resource.NomeMusicaInvalido);
+            if (banda == null || album == null) return BadRequest(Resource.ArtistaInvalido);
+            await _armazenadorMusica.Armazenar(nomeMusica, duracaoMusica, banda, album, disponibilidadeMusica);
+            return Ok(await Get(nomeMusica));
 
-            return BadRequest(Resource.MusicaInvalida);
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using ScreenSound.Ioc;
 
 namespace ScreenSound.API;
 
-internal class Program
+internal abstract class Program
 {
     private static void Main(string[] args)
     {

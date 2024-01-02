@@ -16,8 +16,6 @@ public abstract class Entity<TEntity> : AbstractValidator<TEntity> where TEntity
         ValidationResult = new FluentValidation.Results.ValidationResult();
     }
 
-    public abstract bool Validar();
-
     public static bool operator ==(Entity<TEntity> a, Entity<TEntity> b)
     {
         if ((object)a == null && (object)b == null)
@@ -33,7 +31,7 @@ public abstract class Entity<TEntity> : AbstractValidator<TEntity> where TEntity
         return a.Equals(b);
     }
 
-    public static bool operator  !=(Entity<TEntity> a, Entity<TEntity> b)
+    public static bool operator !=(Entity<TEntity> a, Entity<TEntity> b)
     {
         return !(a == b);
     }
@@ -41,7 +39,9 @@ public abstract class Entity<TEntity> : AbstractValidator<TEntity> where TEntity
     public new FluentValidation.Results.ValidationResult Validate(TEntity instance)
     {
         return Validate(new ValidationContext<TEntity>
-            (instance, new PropertyChain(),
+        (instance, new PropertyChain(),
             ValidatorOptions.Global.ValidatorSelectors.DefaultValidatorSelectorFactory()));
     }
+
+    public abstract bool Validar();
 }
