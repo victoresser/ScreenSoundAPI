@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ScreenSound.Dominio._Base;
 using ScreenSound.Dominio.Models.Albuns.Dto;
 using ScreenSound.Dominio.Models.Bandas;
 using ScreenSound.Dominio.Services.Armazenadores;
@@ -15,7 +16,8 @@ namespace ScreenSound.API.Controllers
         private readonly IBandaRepositorio _bandaRepositorio;
         private readonly IConversorMusicasDoAlbum _conversor;
 
-        public AlbumController(IAlbumRepositorio albumRepositorio, IBandaRepositorio bandaRepositorio, IConversorMusicasDoAlbum conversorMusicasDoAlbum)
+        public AlbumController(IAlbumRepositorio albumRepositorio, IBandaRepositorio bandaRepositorio,
+            IConversorMusicasDoAlbum conversorMusicasDoAlbum)
         {
             _albumRepositorio = albumRepositorio;
             _bandaRepositorio = bandaRepositorio;
@@ -49,7 +51,7 @@ namespace ScreenSound.API.Controllers
                     Imagem = x.Imagem
                 }).Where(x => x.Nome.Equals(nome)).ToList();
 
-                return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
+                return dto.Any() ? dto : new List<ListagemDeAlbuns>();
             }
 
             if (albuns != null)
@@ -62,12 +64,12 @@ namespace ScreenSound.API.Controllers
                     Imagem = x.Imagem
                 }).ToList();
 
-                return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
+                return dto.Any() ? dto : new List<ListagemDeAlbuns>();
             }
 
-            return new List<ListagemDeAlbuns> { };
+            return new List<ListagemDeAlbuns>();
         }
-        
+
         /// <summary>
         /// GET api/<AlbumController>/listarTopFive
         /// </summary>
@@ -95,10 +97,10 @@ namespace ScreenSound.API.Controllers
                     Imagem = x.Imagem
                 }).Where(x => x.Nome.Equals(nome)).ToList();
 
-                return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
+                return dto.Any() ? dto : new List<ListagemDeAlbuns>();
             }
 
-            if (albuns != null)
+            if (albuns == null) return new List<ListagemDeAlbuns>();
             {
                 var dto = albuns.Select(x => new ListagemDeAlbuns
                 {
@@ -108,10 +110,8 @@ namespace ScreenSound.API.Controllers
                     Imagem = x.Imagem
                 }).ToList();
 
-                return dto.Any() ? dto : new List<ListagemDeAlbuns> { };
+                return dto.Any() ? dto : new List<ListagemDeAlbuns>();
             }
-
-            return new List<ListagemDeAlbuns> { };
         }
 
         /// <summary>
@@ -124,19 +124,15 @@ namespace ScreenSound.API.Controllers
         {
             var album = await _albumRepositorio.ObterPorId(id);
 
-            if (album != null)
+            if (album == null) return NotFound(new ListagemDeAlbuns());
+            var dto = new ListagemDeAlbuns
             {
-                var dto = new ListagemDeAlbuns
-                {
-                    Nome = album.Nome,
-                    Banda = album.Banda.Nome,
-                    Musicas = _conversor.ConverterParaListagemDeMusicas(album.MusicasDoAlbum)
-                };
+                Nome = album.Nome,
+                Banda = album.Banda.Nome,
+                Musicas = _conversor.ConverterParaListagemDeMusicas(album.MusicasDoAlbum)
+            };
 
-                return Ok(dto);
-            }
-
-            return NotFound(new ListagemDeAlbuns { });
+            return Ok(dto);
         }
 
         [HttpGet("imagem/{id}")]
@@ -148,43 +144,37 @@ namespace ScreenSound.API.Controllers
         }
 
         // POST api/<AlbumController>
-        [HttpPost]
-        public async Task<IActionResult> Post(string nomeAlbum, string nomeBanda, [FromServices] IArmazenadorAlbum _armazenadorAlbum)
+        [HttpPost("adicionarAlbum")]
+        public async Task<IActionResult> Post(CreateAlbumDto dto, [FromServices] IArmazenadorAlbum armazenadorAlbum)
         {
-            Banda? banda = await _bandaRepositorio.ObterPorNome(nomeBanda);
+            var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
 
-            if (banda != null)
-            {
-                await _armazenadorAlbum.Armazenar(nomeAlbum, banda);
-                return Ok(await Get(_conversor, nome: nomeAlbum));
-            }
-
-            return NotFound("Álbum não encontrada!");
+            if (banda == null) return NotFound(Resource.BandaInexistente);
+            await armazenadorAlbum.Armazenar(dto.Nome, banda);
+            return Ok(await Get(_conversor, nome: dto.Nome));
         }
 
         // PUT api/<AlbumController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromQuery] string? nomeAlbum = null, [FromQuery] string? artista = null)
+        public async Task<IActionResult> Put(int id, [FromQuery] string? nomeAlbum = null,
+            [FromQuery] string? artista = null)
         {
             var album = await _albumRepositorio.ObterPorId(id);
             var banda = await _bandaRepositorio.ObterPorNome(artista);
 
-            if (album != null)
+            if (album == null) return NotFound();
+            
+            if (nomeAlbum != null && album != null)
             {
-                if (nomeAlbum != null && album != null)
-                {
-                    album.AlterarNome(nomeAlbum);
-                }
-
-                if (artista != null && album != null)
-                {
-                    album.AlterarArtista(banda);
-                }
-
-                return Ok(await Get(_conversor, nome: nomeAlbum));
+                album.AlterarNome(nomeAlbum);
             }
 
-            return NotFound();
+            if (artista != null && album != null)
+            {
+                album.AlterarArtista(banda);
+            }
+
+            return Ok(await Get(_conversor, nome: nomeAlbum));
         }
 
         // DELETE api/<AlbumController>/5

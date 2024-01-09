@@ -68,7 +68,7 @@ public class ArmazenadorDeAlbunsTest
         _mockAlbumRepositorio.Setup(r => r.Adicionar(It.IsAny<Album>())).Returns(Task.FromResult(album));
 
         var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, null));
-        Assert.Equal(Resource.ArtistaInvalido, resultado.Message);
+        Assert.Equal(Resource.BandaInvalida, resultado.Message);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class ArmazenadorDeAlbunsTest
         _mockAlbumRepositorio.Setup(r => r.ObterPorId(albumDto.Id)).ReturnsAsync(album);
         var resultado = await _armazenadorDeAlbuns.Editar(album.Id, albumDto.Nome, banda.Nome, albumDto.Imagem);
 
-        Assert.Equal("Álbum editado!", resultado);
+        Assert.Equal(Resource.AlbumEditado, resultado);
         Assert.Equal(albumDto.Nome, album.Nome);
         Assert.Equal(albumDto.Banda, album.Banda);
     }

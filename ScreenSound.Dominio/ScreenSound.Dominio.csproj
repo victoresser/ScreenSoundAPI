@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.7.1" />
+    <PackageReference Include="Google.Apis.CloudNaturalLanguage.v1" Version="1.64.0.3285" />
     <PackageReference Include="OpenAI" Version="1.7.2" />
   </ItemGroup>
 

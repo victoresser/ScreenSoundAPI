@@ -17,10 +17,11 @@ internal abstract class Program
         builder.Services.AddDbContext<ScreenSoundContext>(options => options.UseSqlServer(connString));
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigin",
-                x => x.WithOrigins("http://localhost:4200")
+            options.AddPolicy("AllowSpecificOrigin", x
+                => x.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader());
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("Authorization"));
         });
         StartupIoc.ConfigureServices(builder.Services);
 
@@ -40,7 +41,7 @@ internal abstract class Program
                 await next.Invoke();
 
                 var method = context.Request.Method;
-                var allowedMethodsToCommit = new string[] { "POST", "PUT", "DELETE" };
+                var allowedMethodsToCommit = new[] { "POST", "PUT", "DELETE" };
                 var unitOfWork = context.RequestServices.GetService<IUnitOfWork>();
                 if (allowedMethodsToCommit.Contains(method))
                 {
@@ -48,9 +49,9 @@ internal abstract class Program
                 }
             });
         }
-        
+
         app.UseCors("AllowSpecificOrigin");
-        
+
         app.UseRouting();
 
         app.UseHttpsRedirection();

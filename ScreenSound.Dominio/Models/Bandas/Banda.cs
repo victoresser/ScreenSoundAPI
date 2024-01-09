@@ -7,13 +7,13 @@ namespace ScreenSound.Dominio.Models.Bandas;
 
 public class Banda : Entity<Banda>
 {
-    public string Descricao { get; set; }
+    public string? Descricao { get; set; }
     public DateTime DataDeCriacao { get; set; }
     public string? Imagem { get; set; }
     public virtual ICollection<Album>? AlbunsDaBanda { get; set; }
     public virtual ICollection<Musica>? MusicasDaBanda { get; set; }
 
-    public Banda(string nome, string descricao = "", string? imagem = "")
+    public Banda(string nome, string? descricao = "", string? imagem = "")
     {
         Nome = nome;
         Descricao = descricao;
@@ -38,7 +38,7 @@ public class Banda : Entity<Banda>
             .NotNull()
             .NotEmpty()
             .MaximumLength(255)
-            .WithMessage(Resource.NomeInvalido);
+            .WithMessage(Resource.NomeBandaInvalido);
 
         RuleFor(x => x.Descricao)
             .NotNull()

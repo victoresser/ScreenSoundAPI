@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.CloudNaturalLanguage.v1" Version="1.64.0.3285" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,6 +19,10 @@
     <ProjectReference Include="..\ScreenSound.Dados\ScreenSound.Dados.csproj" />
     <ProjectReference Include="..\ScreenSound.Dominio\ScreenSound.Dominio.csproj" />
     <ProjectReference Include="..\ScreenSound.Ioc\ScreenSound.Ioc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="OpenAPI.json" />
   </ItemGroup>
 
 </Project>

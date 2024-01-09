@@ -28,23 +28,29 @@ public class ArmazenadorDeBandas : IArmazenadorBanda
         return Chat.GetResponseFromChatbotAsync().GetAwaiter().GetResult();
     }
 
-    public async Task<string> Armazenar(Banda bandaDto)
+    public async Task<string> Armazenar(CreateBandaDto dto)
     {
-        var bandaSalva = await _bandaRepositorio.ObterPorNome(bandaDto.Nome);
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto), Resource.BandaInvalida);
 
-        if (bandaSalva != null && bandaSalva.Nome == bandaDto.Nome)
-            throw new ArgumentException(Resource.ArtistaExistente);
+        if (string.IsNullOrWhiteSpace(dto.Nome))
+            throw new ArgumentException(Resource.NomeBandaInvalido);
 
-        if (bandaDto.Nome != null && bandaDto.Nome.Length > 255)
-            throw new ArgumentException(Resource.NomeInvalido);
+        if (dto.Nome.Length > 255)
+            throw new ArgumentException(Resource.NomeBandaInvalido);
 
-        if (bandaDto != null && bandaDto.Descricao.Length > 5000)
+        if (!string.IsNullOrEmpty(dto.Descricao) && dto.Descricao.Length > 5000)
             throw new ArgumentException(Resource.DescricaoBandaInvalida);
 
+        var bandaSalva = await _bandaRepositorio.ObterPorNome(dto.Nome);
 
-        Banda newBanda = new(bandaDto.Nome, GetRespostaBanda(bandaDto.Nome));
+        if (bandaSalva != null)
+            throw new ArgumentException(Resource.BandaJaExiste);
+
+        Banda newBanda = new(dto.Nome, dto.Descricao);
         await _bandaRepositorio.Adicionar(newBanda);
-        return "Banda registrada!";
+
+        return Resource.BandaCriada;
     }
 
     public async Task<string> Editar(int id, string? nome = null, string? descricao = null)
@@ -58,7 +64,7 @@ public class ArmazenadorDeBandas : IArmazenadorBanda
             await Console.Out.WriteLineAsync("Nome da banda foi alterado!");
         }
 
-        if (string.IsNullOrEmpty(descricao)) return $"A banda {nome} foi editada!";
+        if (string.IsNullOrEmpty(descricao)) return $"O nome da banda {nome} foi editada!";
         banda.AlterarDescricao(descricao);
         await Console.Out.WriteLineAsync("Descrição da banda foi alterada!");
 

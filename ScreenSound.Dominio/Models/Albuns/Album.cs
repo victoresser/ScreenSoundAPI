@@ -52,7 +52,7 @@ public class Album : Entity<Album>
 
         RuleFor(x => x.Banda)
             .NotEmpty()
-            .WithMessage(Resource.ArtistaInvalido);
+            .WithMessage(Resource.BandaInvalida);
 
         RuleFor(x => x.MusicasDoAlbum)
             .NotEmpty()

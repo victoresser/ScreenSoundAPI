@@ -12,29 +12,27 @@ namespace ScreenSound.DominioTeste.Musicas;
 
 public class ArmazenadorDeMusicasTest
 {
-    private readonly Faker faker;
+    private readonly Faker _faker;
     private readonly ArmazenadorDeMusicas _armazenadorMusica;
     private readonly Mock<IMusicaRepositorio> _mockMusicaRepositorio;
-    private readonly Mock<IBandaRepositorio> _mockBandaRepositorio;
-    private readonly Mock<IAlbumRepositorio> _mockAlbumRepositorio;
 
     public ArmazenadorDeMusicasTest()
     {
-        faker = new Faker();
+        _faker = new Faker();
         _mockMusicaRepositorio = new Mock<IMusicaRepositorio>();
-        _mockBandaRepositorio = new Mock<IBandaRepositorio>();
-        _mockAlbumRepositorio = new Mock<IAlbumRepositorio>();
-        _armazenadorMusica = new ArmazenadorDeMusicas(_mockMusicaRepositorio.Object, _mockBandaRepositorio.Object, _mockAlbumRepositorio.Object);
+        Mock<IBandaRepositorio> mockBandaRepositorio = new();
+        Mock<IAlbumRepositorio> mockAlbumRepositorio = new();
+        _armazenadorMusica = new ArmazenadorDeMusicas(_mockMusicaRepositorio.Object, mockBandaRepositorio.Object, mockAlbumRepositorio.Object);
     }
 
     [Fact]
     public async void DeveAdicionarMusica()
     {
-        var musica = MusicaBuilder.Novo().Build();
+        var musicaDto = SetupCreateMusicaDto();
         var banda = BandaBuilder.Novo().Build();
         var album = AlbumBuilder.Novo().Build();
 
-        var resultado = await _armazenadorMusica.Armazenar(musica.Nome, musica.Duracao, banda, album, musica.Disponivel);
+        var resultado = await _armazenadorMusica.Armazenar(musicaDto, album, banda);
 
         Assert.Equal(Resource.MusicaCriada, resultado);
     }
@@ -43,49 +41,51 @@ public class ArmazenadorDeMusicasTest
     public async void NaoDeveAdicionarMusicaComMesmoNome()
     {
         var musicaExistente = MusicaBuilder.Novo().Build();
-        var musica = MusicaBuilder.Novo().ComNome(musicaExistente.Nome).Build();
         var banda = BandaBuilder.Novo().Build();
         var album = AlbumBuilder.Novo().Build();
 
-        _mockMusicaRepositorio.Setup(x => x.ObterPorNome(musica.Nome)).ReturnsAsync(musicaExistente);
+        var musicaDto = SetupCreateMusicaDto(nome: musicaExistente.Nome);
+        _mockMusicaRepositorio.Setup(x => x.ObterPorNome(musicaDto.NomeMusica)).ReturnsAsync(musicaExistente);
 
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musica.Nome,
-                                                                                                       musica.Duracao,
-                                                                                                       banda,
-                                                                                                       album,
-                                                                                                       musica.Disponivel));
+        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto, album, banda));
         Assert.Equal(Resource.MusicaExistente, resultado.Message);
     }
 
     [Fact]
     public async void NaoDeveAdicionarMusicaSemBanda()
     {
+        var musicaDto = SetupCreateMusicaDto();
         var musica = MusicaBuilder.Novo().Build();
         var album = AlbumBuilder.Novo().Build();
 
         _mockMusicaRepositorio.Setup(x => x.Adicionar(It.IsAny<Musica>())).Returns(Task.FromResult(musica));
 
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musica.Nome,
-                                                                                                       musica.Duracao,
-                                                                                                       null,
-                                                                                                       album,
-                                                                                                       musica.Disponivel));
-        Assert.Equal(Resource.ArtistaInexistente, resultado.Message);
+        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto, album, null));
+        Assert.Equal(Resource.BandaInexistente, resultado.Message);
     }
 
     [Fact]
     public async void NaoDeveAdicionarMusicaSemAlbum()
     {
+        var musicaDto = SetupCreateMusicaDto();
         var musica = MusicaBuilder.Novo().Build();
-        var banda = BandaBuilder.Novo().Build();
+        musica.Banda = BandaBuilder.Novo().Build();
 
         _mockMusicaRepositorio.Setup(x => x.Adicionar(It.IsAny<Musica>())).Returns(Task.FromResult(musica));
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musica.Nome,
-                                                                                                       musica.Duracao,
-                                                                                                       banda,
-                                                                                                       null,
-                                                                                                       musica.Disponivel));
+        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto, null, musica.Banda));
         
         Assert.Equal(Resource.AlbumInexistente, resultado.Message);
+    }
+
+    private CreateMusicaDto SetupCreateMusicaDto(short? duracao = null, string? nome = null, string? nomeBanda = null, string? nomeAlbum = null)
+    {
+        return new CreateMusicaDto
+        {
+            NomeMusica = string.IsNullOrEmpty(nome) ? _faker.Random.Words(1) : nome,
+            NomeBanda = string.IsNullOrEmpty(nomeBanda) ? _faker.Name.FirstName() : nomeBanda,
+            NomeAlbum = string.IsNullOrEmpty(nomeAlbum) ? _faker.Name.FirstName() : nomeAlbum,
+            Duracao = duracao ?? _faker.Random.Short(10, 256),
+            Imagem = _faker.Image.ToString()
+        };
     }
 }

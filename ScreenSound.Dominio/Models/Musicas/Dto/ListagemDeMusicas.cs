@@ -7,5 +7,5 @@ public class ListagemDeMusicas
     public bool? Disponivel { get; set; }
     public string Album { get; set; }
     public string Banda { get; set; }
-    public string Imagem { get; set; }
+    public string? Imagem { get; set; }
 }

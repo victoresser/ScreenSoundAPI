@@ -25,28 +25,28 @@ public class ArmazenadorDeBandasTest
     [Fact]
     public async Task DeveAdicionarBanda()
     {
-        Banda banda = SetupBandaDto();
+        var banda = SetupCreateBandaDto();
 
         var resultado = await _armazenadorBanda.Armazenar(banda);
 
-        Assert.Equal("Banda registrada!", resultado.ToString());
+        Assert.Equal(Resource.BandaCriada, resultado);
     }
 
     [Fact]
     public async Task NaoDeveAdicionarBandaComMesmoNome()
     {
         var nomeBanda = _faker.Person.FirstName;
-        var banda = SetupBandaDto(nomeBanda);
+        var banda = SetupCreateBandaDto(nomeBanda);
         var bandaJaSalva = await BandaBuilder.Novo()
-                                             .ComId(432)
-                                             .ComNome(nomeBanda)
-                                             .BuildAsync();
+            .ComId(432)
+            .ComNome(nomeBanda)
+            .BuildAsync();
 
         _mockRepositorioBanda.Setup(r => r.ObterPorNome(nomeBanda))
-                             .ReturnsAsync(bandaJaSalva);
+            .ReturnsAsync(bandaJaSalva);
 
         var excecao = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorBanda.Armazenar(banda));
-        Assert.Equal(Resource.ArtistaExistente, excecao.Message);
+        Assert.Equal(Resource.BandaJaExiste, excecao.Message);
     }
 
 
@@ -54,36 +54,40 @@ public class ArmazenadorDeBandasTest
     public async Task NaoDeveAdicionarBandaComNomeMaiorQue255Caracteres()
     {
         var nomeInvalido = _faker.Random.Words(3000);
+        var bandaDto = SetupCreateBandaDto(nomeBanda: nomeInvalido);
         var banda = await BandaBuilder.Novo()
-                                      .ComNome(nomeInvalido)
-                                      .BuildAsync();
+            .ComNome(nomeInvalido)
+            .BuildAsync();
 
         _mockRepositorioBanda.Setup(r => r.Adicionar(It.IsAny<Banda>())).Returns(Task.FromResult(banda));
 
-        var excecao = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorBanda.Armazenar(banda));
-        Assert.Equal(Resource.NomeInvalido, excecao.Message);
+        var excecao = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorBanda.Armazenar(bandaDto));
+        Assert.Equal(Resource.NomeBandaInvalido, excecao.Message);
     }
 
     [Fact]
     public async Task NaoDeveAdicionarBandaComDescricaoMaiorQue5000Caracteres()
     {
         var descricaoInvalida = _faker.Random.Words(10000);
+        var bandaDto = SetupCreateBandaDto(descricao: descricaoInvalida);
         var banda = await BandaBuilder.Novo()
-                                      .ComDescricao(descricaoInvalida)
-                                      .BuildAsync();
+            .ComDescricao(descricaoInvalida)
+            .BuildAsync();
+        
+        
 
         _mockRepositorioBanda.Setup(r => r.Adicionar(It.IsAny<Banda>())).Returns(Task.FromResult(banda));
 
-        var excecao = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorBanda.Armazenar(banda));
+        var excecao = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorBanda.Armazenar(bandaDto));
         Assert.Equal(Resource.DescricaoBandaInvalida, excecao.Message);
     }
 
     [Fact]
     public async Task DeveAlterarDadosDaBanda()
     {
-        var bandaDto = SetupBandaDto();
+        var bandaDto = SetupBanda();
         var banda = await BandaBuilder.Novo().BuildAsync();
-        
+
         _mockRepositorioBanda.Setup(r => r.ObterPorIdAsync(bandaDto.Id)).ReturnsAsync(banda);
 
         var resultado = await _armazenadorBanda.Editar(banda.Id, bandaDto.Nome, bandaDto.Descricao);
@@ -92,9 +96,19 @@ public class ArmazenadorDeBandasTest
         Assert.Equal(bandaDto.Descricao, banda.Descricao);
     }
 
-    private Banda SetupBandaDto(string? nomeBanda = null)
+    private CreateBandaDto SetupCreateBandaDto(string? nomeBanda = null, string? descricao = null)
     {
-        return new Banda(string.IsNullOrEmpty(nomeBanda) ? _faker.Random.Words(1) : nomeBanda)
+        return new CreateBandaDto
+        {
+            Nome = string.IsNullOrEmpty(nomeBanda) ? _faker.Random.Words(1) : nomeBanda,
+            Descricao = string.IsNullOrEmpty(descricao) ? _faker.Lorem.Paragraph() : descricao,
+            Imagem = _faker.Image.ToString(),
+        };
+    }
+
+    private Banda SetupBanda(string? nomeBanda = null)
+    {
+        return new Banda(nome: string.IsNullOrEmpty(nomeBanda) ? _faker.Random.Words(1) : nomeBanda)
         {
             Descricao = _faker.Lorem.Paragraph()
         };

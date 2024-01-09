@@ -19,38 +19,31 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
         _albumRepositorio = albumRepositorio;
     }
 
-    public async Task<string> Armazenar(string nome, short duracao, Banda banda, Album album, bool? disponivel = true, string? imagem = "")
+    public async Task<string> Armazenar(CreateMusicaDto dto, Album album, Banda banda)
     {
-        Musica? musicaJaSalva = await _musicaRepositorio.ObterPorNome(nome);
+        var musicaJaSalva = await _musicaRepositorio.ObterPorNome(dto.NomeMusica);
 
-        if (musicaJaSalva == null || musicaJaSalva.Nome != nome)
-        {
-            if (banda == null)
-            {
-                throw new ArgumentException(Resource.ArtistaInexistente);
-            }
+        if (musicaJaSalva != null && musicaJaSalva.Nome == dto.NomeMusica)
+            throw new ArgumentException(Resource.MusicaExistente);
+        
+        if (banda == null)
+            throw new ArgumentException(Resource.BandaInexistente);
 
-            if (album == null)
-            {
-                throw new ArgumentException(Resource.AlbumInexistente);
-            }
+        if (album == null)
+            throw new ArgumentException(Resource.AlbumInexistente);
 
-            if (nome != null && nome.Length > 255)
-            {
-                throw new ArgumentException(Resource.NomeAlbumInvalido);
-            }
+        if (dto.NomeMusica != null && dto.NomeMusica.Length > 255)
+            throw new ArgumentException(Resource.NomeAlbumInvalido);
 
-            if (nome != null && banda != null && album != null)
-            {
-                var musica = new Musica(nome, duracao, album.Id, banda.Id, disponivel, imagem);
-                await _musicaRepositorio.Adicionar(musica);
-                return Resource.MusicaCriada;
-            }
+        if (dto.NomeMusica == null || banda == null || album == null)
+            return
+                "Erro | Aparentemente, algo deu errado com o registro desta música, verifique as informações inseridas";
+        
+        var musica = new Musica(dto.NomeMusica, dto.Duracao, album.Id, banda.Id, dto.Disponibilidade, dto.Imagem);
+        
+        await _musicaRepositorio.Adicionar(musica);
+        return Resource.MusicaCriada;
 
-            return "Erro | Aparentemente, algo deu errado com o registro desta música, verifique as informações inseridas";
-        }
-
-        throw new ArgumentException(Resource.MusicaExistente);
     }
 
     public async Task<string> Editar(int id, string? nome, string? nomeArtista, string? nomeAlbum, short? duracaoMusica, bool disponibilidade, string? imagem)

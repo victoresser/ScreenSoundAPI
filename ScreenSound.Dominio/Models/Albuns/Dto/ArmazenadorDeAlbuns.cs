@@ -18,7 +18,7 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
 
     public async Task<string> Armazenar(string nome, Banda banda)
     {
-        Album? albumSalvo = await _albumRepositorio.ObterPorNome(nome);
+        var albumSalvo = await _albumRepositorio.ObterPorNome(nome);
 
         if (albumSalvo != null && albumSalvo.Nome == nome)
         {
@@ -32,7 +32,7 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
 
         if (banda == null)
         {
-            throw new ArgumentException(Resource.ArtistaInvalido);
+            throw new ArgumentException(Resource.BandaInvalida);
         }
 
         var newAlbum = new Album(nome, banda.Id);
@@ -69,6 +69,6 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
             await Console.Out.WriteLineAsync($"O Caminho da imagem deste Álbum foi alterado para '{album.Imagem}'.");
         }
 
-        return "Álbum editado!";
+        return Resource.AlbumEditado;
     }
 }

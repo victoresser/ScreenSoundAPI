@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using ScreenSound.Dominio.Models.Bandas;
+using ScreenSound.Dominio.Models.Bandas.Dto;
 
 namespace ScreenSound.DominioTeste._Builder;
 
@@ -45,7 +46,7 @@ public class BandaBuilder
         if (Id <= 0) return banda;
 
         var propertyInfo = banda.GetType().GetProperty("Id");
-        propertyInfo.SetValue(banda, Convert.ChangeType(Id, propertyInfo.PropertyType), null);
+        propertyInfo?.SetValue(banda, Convert.ChangeType(Id, propertyInfo.PropertyType), null);
 
         return banda;
     }
@@ -57,7 +58,7 @@ public class BandaBuilder
         if (Id <= 0) return banda;
 
         var propertyInfo = banda.GetType().GetProperty("Id");
-        propertyInfo.SetValue(banda, Convert.ChangeType(Id, propertyInfo.PropertyType), null);
+        propertyInfo?.SetValue(banda, Convert.ChangeType(Id, propertyInfo.PropertyType), null);
 
         return await Task.FromResult(banda);
     }

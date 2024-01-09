@@ -50,7 +50,7 @@ namespace ScreenSound.API.Controllers
                     Imagem = x.Imagem
                 }).Skip(skip).Take(take).ToList();
 
-                return dto.Any() ? dto : new List<ListagemDeBandas> { };
+                return dto.Any() ? dto : new List<ListagemDeBandas>();
             }
 
             var dtos = consulta.Select(x => new ListagemDeBandas
@@ -61,7 +61,7 @@ namespace ScreenSound.API.Controllers
                 Imagem = x.Imagem
             }).Where(x => x.Nome.Equals(nomeBanda)).Skip(skip).Take(take).ToList();
 
-            return dtos.Any() ? dtos : new List<ListagemDeBandas> { };
+            return dtos.Any() ? dtos : new List<ListagemDeBandas>();
 
         }
         
@@ -112,6 +112,7 @@ namespace ScreenSound.API.Controllers
         /// GET api/<BandaController>/listar/5
         /// </summary>
         /// <param name="id">Id da Banda</param>
+        /// <param name="conversor"></param>
         /// <returns></returns>
         [HttpGet("listar/{id}")]
         public async Task<IActionResult> GetForId(int id, [FromServices] IConversorAlbunsDaBanda conversor)
@@ -142,18 +143,14 @@ namespace ScreenSound.API.Controllers
         /// <param name="imagem"></param>
         /// <returns></returns>
         [HttpPost("adicionarBanda")]
-        public async Task<IActionResult> Post(string nomeDaBanda, [FromServices] IArmazenadorBanda armazenadorBanda, string? imagem = "")
+        public async Task<IActionResult> Post(CreateBandaDto dto, [FromServices] IArmazenadorBanda armazenadorBanda)
         {
-            var dto = new Banda(nomeDaBanda)
-            {
-                Imagem = imagem
-            };
             await armazenadorBanda.Armazenar(dto);
-            return Ok(await Get(nomeBanda: nomeDaBanda, conversor: _conversor));
+            return Ok(await Get(nomeBanda: dto.Nome, conversor: _conversor));
         }
 
         // PUT api/<BandaController>/5
-        [HttpPut("editar/{id}")]
+        [HttpPut("editar/{id:int}")]
         public async Task<IActionResult> Put(int id, string? nome, string? descricao, string? imagem, [FromServices] IArmazenadorBanda armazenadorBanda)
         {
             await armazenadorBanda.Editar(id, nome, descricao);
