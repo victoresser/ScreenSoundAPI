@@ -20,7 +20,7 @@ public class RepositorioBase<TEntity> : IRepositorio<TEntity> where TEntity : En
         await Context.SaveChangesAsync();
     }
 
-    public virtual async Task<List<TEntity>> Consultar()
+    public virtual async Task<List<TEntity>> ConsultarAsync()
     {
         var query = Context.Set<TEntity>().ToListAsync();
 

@@ -38,12 +38,13 @@ namespace ScreenSound.API.Controllers
             string? nomeBanda = null
             )
         {
-            var consulta = await _bandaRepositorio.Consultar();
+            var consulta = await _bandaRepositorio.ConsultarAsync();
 
             if (nomeBanda == null)
             {
                 var dto = consulta.Select(x => new ListagemDeBandas
                 {
+                    Id = x.Id,
                     Nome = x.Nome,
                     Descricao = x.Descricao,
                     Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
@@ -55,11 +56,12 @@ namespace ScreenSound.API.Controllers
 
             var dtos = consulta.Select(x => new ListagemDeBandas
             {
+                Id = x.Id,
                 Nome = x.Nome,
                 Descricao = x.Descricao,
                 Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
                 Imagem = x.Imagem
-            }).Where(x => x.Nome.Equals(nomeBanda)).Skip(skip).Take(take).ToList();
+            }).Where(x => x.Nome.Contains(nomeBanda)).Skip(skip).Take(take).ToList();
 
             return dtos.Any() ? dtos : new List<ListagemDeBandas>();
 
@@ -81,7 +83,7 @@ namespace ScreenSound.API.Controllers
             string? nomeBanda = null
             )
         {
-            var consulta = await _bandaRepositorio.Consultar();
+            var consulta = await _bandaRepositorio.ConsultarAsync();
 
             if (nomeBanda == null)
             {
@@ -139,8 +141,9 @@ namespace ScreenSound.API.Controllers
         /// POST api/<BandaController>/adicionarBanda
         /// </summary>
         /// <param name="nomeDaBanda"></param>
-        /// <param name="armazenadorBanda"></param>
-        /// <param name="imagem"></param>
+        /// <param name="dto">DTO com informações necessárias para criação de uma nova banda</param>
+        /// <param name="armazenadorBanda">Serviço que armazena as informações da Banda</param>
+        /// <param name="imagem">URL da imagem de capa da banda</param>
         /// <returns></returns>
         [HttpPost("adicionarBanda")]
         public async Task<IActionResult> Post(CreateBandaDto dto, [FromServices] IArmazenadorBanda armazenadorBanda)
@@ -151,9 +154,9 @@ namespace ScreenSound.API.Controllers
 
         // PUT api/<BandaController>/5
         [HttpPut("editar/{id:int}")]
-        public async Task<IActionResult> Put(int id, string? nome, string? descricao, string? imagem, [FromServices] IArmazenadorBanda armazenadorBanda)
+        public async Task<IActionResult> Put(int id, EditBandaDto dto,[FromServices] IArmazenadorBanda armazenadorBanda)
         {
-            await armazenadorBanda.Editar(id, nome, descricao);
+            await armazenadorBanda.Editar(id, dto.Nome, dto.Descricao);
             return Ok(await GetForId(id, _conversor));
         }
 

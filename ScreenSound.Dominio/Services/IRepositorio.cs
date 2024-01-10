@@ -3,6 +3,6 @@
 public interface IRepositorio<TEntity>
 {
     Task Adicionar(TEntity tentidade);
-    Task<List<TEntity>> Consultar();
+    Task<List<TEntity>> ConsultarAsync();
     Task Deletar(int id);
 }

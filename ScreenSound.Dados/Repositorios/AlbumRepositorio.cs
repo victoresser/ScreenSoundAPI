@@ -11,7 +11,7 @@ public class AlbumRepositorio : RepositorioBase<Album>, IAlbumRepositorio
 
     }
 
-    public override async Task<List<Album>> Consultar()
+    public override async Task<List<Album>> ConsultarAsync()
     {
         var query = Context.Set<Album>()
             .Include(x => x.Banda)

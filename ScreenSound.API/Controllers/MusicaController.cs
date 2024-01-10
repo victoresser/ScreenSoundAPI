@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.JSInterop.Infrastructure;
 using ScreenSound.Dominio._Base;
 using ScreenSound.Dominio.Models.Albuns;
 using ScreenSound.Dominio.Models.Bandas;
@@ -33,25 +34,27 @@ namespace ScreenSound.API.Controllers
         public async Task<IEnumerable<ListagemDeMusicas>> Get(string? nomeMusica = null, [FromQuery] int skip = 0,
             [FromQuery] int take = 10)
         {
-            IEnumerable<Musica> consulta = await _musicaRepositorio.Consultar();
+            IEnumerable<Musica> consulta = await _musicaRepositorio.ConsultarAsync();
 
             if (nomeMusica != null)
             {
                 var dto = consulta.Select(x => new ListagemDeMusicas
                 {
+                    Id = x.Id,
                     Nome = x.Nome,
                     Duracao = x.Duracao,
                     Disponivel = x.Disponivel,
                     Banda = x.Banda.Nome,
                     Album = x.Album.Nome,
                     Imagem = x.Imagem
-                }).Where(x => x.Nome.Equals(nomeMusica)).Skip(skip).Take(take).ToList();
+                }).Where(x => x.Nome.Contains(nomeMusica)).Skip(skip).Take(take).ToList();
 
                 return dto.Any() ? dto : new List<ListagemDeMusicas>();
             }
 
             var dtos = consulta.Select(x => new ListagemDeMusicas
             {
+                Id = x.Id,
                 Nome = x.Nome,
                 Duracao = x.Duracao,
                 Disponivel = x.Disponivel,
@@ -72,7 +75,7 @@ namespace ScreenSound.API.Controllers
             [FromQuery] int skip = 0,
             [FromQuery] int take = 5)
         {
-            IEnumerable<Musica> consulta = await _musicaRepositorio.Consultar();
+            IEnumerable<Musica> consulta = await _musicaRepositorio.ConsultarAsync();
 
             if (consulta == null) return new List<ListagemDeMusicas>();
             if (nomeMusica != null)
@@ -115,7 +118,7 @@ namespace ScreenSound.API.Controllers
 
             if (consulta == null)
             {
-                return Ok(new ListagemDeMusicas { });
+                return Ok(new ListagemDeMusicas());
             }
 
             var dto = new ListagemDeMusicas
@@ -135,10 +138,10 @@ namespace ScreenSound.API.Controllers
         /// POST api/<MusicaController>
         /// </summary>
         /// <param name="dto">Dto com informações da banda criada</param>
-        /// <param name="armazenadorMusica">Serviço que serve para Armazena/Editar uma música</param>
+        /// <param name="armazenadorMusica">Serviço que serve para Armazenar/Editar uma música</param>
         /// <returns code = "200">Success: Música cadastrada</returns>
         [HttpPost("adicionarMusica")]
-        public async Task<IActionResult> Post( CreateMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica)
+        public async Task<IActionResult> Post(CreateMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica)
         {
             var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
             var album = await _albumRepositorio.ObterPorNome(dto.NomeAlbum);
@@ -160,22 +163,16 @@ namespace ScreenSound.API.Controllers
         /// <param name="disponibilidade">Disponibilidade da música que deseja editar</param>
         /// <param name="nomeBanda">Nome da Banda da música que deseja editar</param>
         /// <param name="nomeAlbum">Nome do Álbum da música que deseja editar</param>
-        /// <param name="_armazenadorMusica">Serviço que serve para Armazena/Editar uma música</param>
+        /// <param name="dto"></param>
+        /// <param name="armazenadorMusica">Serviço que serve para Armazena/Editar uma música</param>
         /// <returns>Música editada!</returns>
         [HttpPut("editar/{id:int}")]
-        public async Task<IActionResult> Put(int id,
-            string? nomeMusica,
-            short? duracao,
-            bool disponibilidade,
-            string? nomeBanda,
-            string? nomeAlbum,
-            string? imagem,
-            [FromServices] IArmazenadorMusica _armazenadorMusica)
+        public async Task<IActionResult> Put(EditMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica)
         {
-            if (id <= 0) return NotFound();
+            if (dto.Id <= 0) return NotFound();
 
-            await _armazenadorMusica.Editar(id, nomeMusica, nomeBanda, nomeAlbum, duracao, disponibilidade, imagem);
-            return Ok(await GetForId(id));
+            await armazenadorMusica.Editar(dto);
+            return Ok(await GetForId(dto.Id));
         }
 
         /// <summary>

@@ -46,52 +46,50 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
 
     }
 
-    public async Task<string> Editar(int id, string? nome, string? nomeArtista, string? nomeAlbum, short? duracaoMusica, bool disponibilidade, string? imagem)
+    public async Task<string> Editar(EditMusicaDto dto)
     {
-        var musica = await _musicaRepositorio.ObterPorId(id);
-        var banda = await _bandaRepositorio.ObterPorNome(nomeArtista);
-        var album = await _albumRepositorio.ObterPorNome(nomeAlbum);
+        var musica = await _musicaRepositorio.ObterPorId(dto.Id);
+        var banda = await _bandaRepositorio.ObterPorNome(dto.nomeBanda ?? string.Empty);
+        var album = await _albumRepositorio.ObterPorNome(dto.nomeAlbum ?? string.Empty);
 
         if (musica == null)
         {
             return "Música não encontrada!";
         }
 
-        if (!string.IsNullOrEmpty(nome))
+        if (!string.IsNullOrEmpty(dto.NomeMusica))
         {
-            musica.AlterarNome(nome);
+            musica.AlterarNome(dto.NomeMusica);
             await Console.Out.WriteLineAsync($"O nome da música foi alterado para {musica.Nome}");
         }
 
-        if (!string.IsNullOrEmpty(nomeArtista) && banda != null)
+        if (!string.IsNullOrEmpty(dto.nomeBanda) && banda != null)
         {
             musica.AlterarArtista(banda);
             await Console.Out.WriteLineAsync($"A autoria desta música foi alterada para {musica.Banda.Nome}");
         }
 
-        if (!string.IsNullOrEmpty(nomeAlbum) && album != null)
+        if (!string.IsNullOrEmpty(dto.nomeAlbum) && album != null)
         {
             musica.AlterarAlbum(album);
             await Console.Out.WriteLineAsync($"Esta música agora faz parte do álbum: {musica.Album.Nome}");
         }
 
-        if (duracaoMusica != null && duracaoMusica > 0)
+        if (dto.Duracao != null && dto.Duracao > 0)
         {
-            musica.AlterarDuracao((short)duracaoMusica);
+            musica.AlterarDuracao((short)dto.Duracao);
             await Console.Out.WriteLineAsync($"A duração desta música foi alterada para {musica.Duracao}");
         }
 
-        if (disponibilidade)
+        if (dto.DisponibilidadeMusica)
         {
-            musica.AlterarDisponibilidade(disponibilidade);
+            musica.AlterarDisponibilidade(dto.DisponibilidadeMusica);
             await Console.Out.WriteLineAsync($"A disponibilidade desta música foi alterarada para {musica.Disponivel}");
         }
 
-        if (imagem != null)
-        {
-            musica.AlterarImagem(imagem);
-            await Console.Out.WriteLineAsync($"O caminho desta música foi alterado para {musica.Imagem}");
-        }
+        if (string.IsNullOrEmpty(dto.Imagem)) return "Música editada com sucesso!";
+        musica.AlterarImagem(dto.Imagem);
+        await Console.Out.WriteLineAsync($"O caminho da imagem desta música foi alterado para {musica.Imagem}");
 
         return "Música editada com sucesso!";
 

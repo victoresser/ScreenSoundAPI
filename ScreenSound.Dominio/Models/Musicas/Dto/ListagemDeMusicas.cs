@@ -2,6 +2,7 @@
 
 public class ListagemDeMusicas
 {
+    public int Id { get; set; }
     public string Nome { get; set; }
     public short Duracao { get; set; }
     public bool? Disponivel { get; set; }

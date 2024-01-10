@@ -10,7 +10,7 @@ public class MusicaRepositorio : RepositorioBase<Musica>, IMusicaRepositorio
     {
     }
 
-    public override async Task<List<Musica>> Consultar()
+    public override async Task<List<Musica>> ConsultarAsync()
     {
         var query = Context.Set<Musica>()
             .Include(x => x.Banda)
