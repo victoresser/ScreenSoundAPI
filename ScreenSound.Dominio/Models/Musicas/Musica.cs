@@ -16,7 +16,7 @@ public class Musica : Entity<Musica>
     public virtual Album Album { get; set; }
     public virtual Banda Banda { get; set; }
 
-    public Musica(string nome, short duracao, int albumId, int bandaId, bool? disponivel = true, string? imagem = "")
+    public Musica(string nome, short duracao, int albumId, int bandaId, bool? disponivel = false, string? imagem = "")
     {
         Nome = nome;
         Duracao = duracao;

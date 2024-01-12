@@ -47,9 +47,10 @@ namespace ScreenSound.API.Controllers
                 {
                     Id = x.Id,
                     Nome = x.Nome,
+                    Imagem = x.Imagem,
+                    BandaId = x.BandaId,
                     Banda = x.Banda?.Nome ?? string.Empty,
-                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
-                    Imagem = x.Imagem
+                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum)
                 }).Where(x => x.Nome.Contains(nome)).ToList();
 
                 return dto.Any() ? dto : new List<ListagemDeAlbuns>();
@@ -61,9 +62,10 @@ namespace ScreenSound.API.Controllers
                 {
                     Id = x.Id,
                     Nome = x.Nome,
+                    Imagem = x.Imagem,
+                    BandaId = x.BandaId,
                     Banda = x.Banda?.Nome ?? string.Empty,
                     Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
-                    Imagem = x.Imagem
                 }).ToList().Skip(skip).Take(take);
 
                 return dto.Any() ? dto : new List<ListagemDeAlbuns>();
@@ -93,7 +95,6 @@ namespace ScreenSound.API.Controllers
                 {
                     Nome = x.Nome,
                     Banda = x.Banda.Nome,
-                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
                     Imagem = x.Imagem
                 }).Where(x => x.Nome.Equals(nome)).ToList();
 
@@ -106,7 +107,6 @@ namespace ScreenSound.API.Controllers
                 {
                     Nome = x.Nome,
                     Banda = x.Banda.Nome,
-                    Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
                     Imagem = x.Imagem
                 }).ToList().Skip(skip).Take(take);
 
@@ -156,24 +156,13 @@ namespace ScreenSound.API.Controllers
 
         // PUT api/<AlbumController>/5
         [HttpPut("editar/{id}")]
-        public async Task<IActionResult> Put(int id, EditAlbumDto dto)
+        public async Task<IActionResult> Put(EditAlbumDto dto, [FromServices] IArmazenadorAlbum armazenadorAlbum)
         {
-            var album = await _albumRepositorio.ObterPorId(id);
-            var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda!);
+            if (dto.Id <= 0) return NotFound(Resource.AlbumInexistente);
+            
+            await armazenadorAlbum.Editar(dto);
 
-            if (album == null) return NotFound();
-
-            if (dto.Nome != null && album != null)
-            {
-                album.AlterarNome(dto.Nome);
-            }
-
-            if (dto.NomeBanda != null && album != null)
-            {
-                album.AlterarArtista(banda);
-            }
-
-            return Ok(await Get(_conversor, nome: dto.Nome));
+            return Ok(await GetForId(dto.Id));
         }
 
         // DELETE api/<AlbumController>/5

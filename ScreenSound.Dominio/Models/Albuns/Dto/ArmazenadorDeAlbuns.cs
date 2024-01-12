@@ -40,34 +40,30 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
         return Resource.AlbumCriado;
     }
 
-    public async Task<string> Editar(int id, string? nome, string? nomeBanda, string? imagem)
+    public async Task<string> Editar(EditAlbumDto dto)
     {
 
-        var album = await _albumRepositorio.ObterPorId(id);
-        var artista = await _bandaRepositorio.ObterPorNome(nomeBanda);
+        var album = await _albumRepositorio.ObterPorId(dto.Id);
+        var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
 
         if (album == null)
-        {
-            throw new ArgumentNullException(Resource.AlbumInexistente);
-        }
+            return Resource.AlbumInexistente;
 
-        if (nome != null)
+        if (!string.IsNullOrWhiteSpace(dto.Nome))
         {
-            album.AlterarNome(nome);
+            album.AlterarNome(dto.Nome);
             await Console.Out.WriteLineAsync("O nome do álbum foi alterado!");
         }
 
-        if (artista != null)
+        if (!string.IsNullOrWhiteSpace(dto.NomeBanda) && banda != null)
         {
-            album.AlterarArtista(artista);
+            album.AlterarArtista(banda);
             await Console.Out.WriteLineAsync("O Artista do álbum foi alterado!");
         }
 
-        if (!string.IsNullOrEmpty(imagem))
-        {
-            album.AlterarImagem(imagem);
-            await Console.Out.WriteLineAsync($"O Caminho da imagem deste Álbum foi alterado para '{album.Imagem}'.");
-        }
+        if (string.IsNullOrWhiteSpace(dto.Imagem)) return Resource.AlbumEditado;
+        album.AlterarImagem(dto.Imagem);
+        await Console.Out.WriteLineAsync($"O Caminho da imagem deste Álbum foi alterado para '{album.Imagem}'.");
 
         return Resource.AlbumEditado;
     }

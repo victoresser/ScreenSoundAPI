@@ -33,7 +33,7 @@ public class Album : Entity<Album>
 
     public void AlterarArtista(Banda artista)
     {
-        Banda = artista;
+        BandaId = artista.Id;
         Validar();
     }
 

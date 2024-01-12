@@ -169,7 +169,7 @@ namespace ScreenSound.API.Controllers
         [HttpPut("editar/{id:int}")]
         public async Task<IActionResult> Put(EditMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica)
         {
-            if (dto.Id <= 0) return NotFound();
+            if (dto.Id <= 0) return NotFound(Resource.MusicaInexistente);
 
             await armazenadorMusica.Editar(dto);
             return Ok(await GetForId(dto.Id));
@@ -185,13 +185,10 @@ namespace ScreenSound.API.Controllers
         {
             var musica = await _musicaRepositorio.ObterPorId(id);
 
-            if (musica != null)
-            {
-                await _musicaRepositorio.Deletar(musica.Id);
-                return Ok("Música Excluída");
-            }
+            if (musica == null) return BadRequest(Resource.MusicaInexistente);
+            await _musicaRepositorio.Deletar(musica.Id);
+            return Ok("Música Excluída");
 
-            return BadRequest();
         }
     }
 }
