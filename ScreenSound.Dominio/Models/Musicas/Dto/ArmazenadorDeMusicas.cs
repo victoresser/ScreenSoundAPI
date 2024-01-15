@@ -19,9 +19,11 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
         _albumRepositorio = albumRepositorio;
     }
 
-    public async Task<string> Armazenar(CreateMusicaDto dto, Album album, Banda banda)
+    public async Task<string> Armazenar(CreateMusicaDto dto)
     {
         var musicaJaSalva = await _musicaRepositorio.ObterPorNome(dto.NomeMusica);
+        var album = await _albumRepositorio.ObterPorNome(dto.NomeAlbum);
+        var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
 
         if (musicaJaSalva != null && musicaJaSalva.Nome == dto.NomeMusica)
             throw new ArgumentException(Resource.MusicaExistente);
@@ -35,9 +37,10 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
         if (dto.NomeMusica != null && dto.NomeMusica.Length > 255)
             throw new ArgumentException(Resource.NomeAlbumInvalido);
 
-        if (dto.NomeMusica == null || banda == null || album == null)
-            return
-                "Erro | Aparentemente, algo deu errado com o registro desta música, verifique as informações inseridas";
+        if (string.IsNullOrWhiteSpace(dto.NomeMusica) || banda == null || album == null)
+            throw new ArgumentException(
+            "Erro | Aparentemente, algo deu errado com o registro desta música, verifique as informações inseridas"
+                );
         
         var musica = new Musica(dto.NomeMusica, dto.Duracao, album.Id, banda.Id, dto.Disponibilidade, dto.Imagem);
         
@@ -53,10 +56,8 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
         var album = await _albumRepositorio.ObterPorNome(dto.nomeAlbum ?? string.Empty);
 
         if (musica == null)
-        {
-            return "Música não encontrada!";
-        }
-
+            throw new ArgumentException(Resource.MusicaInexistente);
+        
         if (!string.IsNullOrEmpty(dto.NomeMusica))
         {
             musica.AlterarNome(dto.NomeMusica);

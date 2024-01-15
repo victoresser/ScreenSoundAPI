@@ -6,6 +6,6 @@ namespace ScreenSound.Dominio.Services.Armazenadores;
 
 public interface IArmazenadorMusica
 {
-    Task<string> Armazenar(CreateMusicaDto dto, Album album, Banda banda);
+    Task<string> Armazenar(CreateMusicaDto dto);
     Task<string> Editar(EditMusicaDto dto);
 }

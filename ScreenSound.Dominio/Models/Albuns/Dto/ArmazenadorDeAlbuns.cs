@@ -25,7 +25,7 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
             throw new ArgumentException(Resource.AlbumExistente);
         }
 
-        if (nome != null && nome.Length > 255)
+        if (!string.IsNullOrWhiteSpace(nome) && nome.Length > 255)
         {
             throw new ArgumentException(Resource.NomeAlbumInvalido);
         }

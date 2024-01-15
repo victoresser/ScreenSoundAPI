@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.JSInterop.Infrastructure;
 using ScreenSound.Dominio._Base;
-using ScreenSound.Dominio.Models.Albuns;
-using ScreenSound.Dominio.Models.Bandas;
 using ScreenSound.Dominio.Models.Musicas;
 using ScreenSound.Dominio.Models.Musicas.Dto;
 using ScreenSound.Dominio.Services.Armazenadores;
@@ -36,17 +33,17 @@ namespace ScreenSound.API.Controllers
         {
             IEnumerable<Musica> consulta = await _musicaRepositorio.ConsultarAsync();
 
-            if (nomeMusica != null)
+            if (!string.IsNullOrWhiteSpace(nomeMusica))
             {
                 var dto = consulta.Select(x => new ListagemDeMusicas
                 {
                     Id = x.Id,
                     Nome = x.Nome,
+                    Imagem = x.Imagem,
                     Duracao = x.Duracao,
-                    Disponivel = x.Disponivel,
                     Banda = x.Banda.Nome,
                     Album = x.Album.Nome,
-                    Imagem = x.Imagem
+                    Disponivel = x.Disponivel
                 }).Where(x => x.Nome.Contains(nomeMusica)).Skip(skip).Take(take).ToList();
 
                 return dto.Any() ? dto : new List<ListagemDeMusicas>();
@@ -56,11 +53,11 @@ namespace ScreenSound.API.Controllers
             {
                 Id = x.Id,
                 Nome = x.Nome,
+                Imagem = x.Imagem,
                 Duracao = x.Duracao,
-                Disponivel = x.Disponivel,
                 Banda = x.Banda.Nome,
                 Album = x.Album.Nome,
-                Imagem = x.Imagem
+                Disponivel = x.Disponivel
             }).Skip(skip).Take(take).ToList();
 
             return dtos.Any() ? dtos : new List<ListagemDeMusicas>();
@@ -143,14 +140,7 @@ namespace ScreenSound.API.Controllers
         [HttpPost("adicionarMusica")]
         public async Task<IActionResult> Post(CreateMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica)
         {
-            var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
-            var album = await _albumRepositorio.ObterPorNome(dto.NomeAlbum);
-
-            if (string.IsNullOrWhiteSpace(dto.NomeMusica)) return BadRequest(Resource.NomeMusicaInvalido);
-            if (banda == null) return BadRequest(Resource.BandaInvalida);
-            if (album == null) return BadRequest(Resource.AlbumInvalido);
-
-            await armazenadorMusica.Armazenar(dto, album, banda);
+            await armazenadorMusica.Armazenar(dto);
             return Ok(await Get(dto.NomeMusica));
         }
 
@@ -167,9 +157,9 @@ namespace ScreenSound.API.Controllers
         /// <param name="armazenadorMusica">Serviço que serve para Armazena/Editar uma música</param>
         /// <returns>Música editada!</returns>
         [HttpPut("editar/{id:int}")]
-        public async Task<IActionResult> Put(EditMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica)
+        public async Task<IActionResult> Put(EditMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica, int id)
         {
-            if (dto.Id <= 0) return NotFound(Resource.MusicaInexistente);
+            if (id <= 0) return NotFound(Resource.MusicaInexistente);
 
             await armazenadorMusica.Editar(dto);
             return Ok(await GetForId(dto.Id));
@@ -180,7 +170,7 @@ namespace ScreenSound.API.Controllers
         /// </summary>
         /// <param name="id">ID da música que deseja deletar</param>
         /// <returns></returns>
-        [HttpDelete("excluir/{id}")]
+        [HttpDelete("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var musica = await _musicaRepositorio.ObterPorId(id);

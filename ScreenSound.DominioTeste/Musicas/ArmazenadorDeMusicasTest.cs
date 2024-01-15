@@ -15,6 +15,8 @@ public class ArmazenadorDeMusicasTest
     private readonly Faker _faker;
     private readonly ArmazenadorDeMusicas _armazenadorMusica;
     private readonly Mock<IMusicaRepositorio> _mockMusicaRepositorio;
+    private readonly Mock<IBandaRepositorio> _mockBandaRepositorio;
+    private readonly Mock<IAlbumRepositorio> _mockAlbumRepositorio;
 
     public ArmazenadorDeMusicasTest()
     {
@@ -28,11 +30,11 @@ public class ArmazenadorDeMusicasTest
     [Fact]
     public async void DeveAdicionarMusica()
     {
-        var musicaDto = SetupCreateMusicaDto();
         var banda = BandaBuilder.Novo().Build();
-        var album = AlbumBuilder.Novo().Build();
-
-        var resultado = await _armazenadorMusica.Armazenar(musicaDto, album, banda);
+        var album = AlbumBuilder.Novo().ComBanda(banda).Build();
+        var musicaDto = SetupCreateMusicaDto(nomeBanda: banda.Nome, nomeAlbum: album.Nome);
+        
+        var resultado = await _armazenadorMusica.Armazenar(musicaDto);
 
         Assert.Equal(Resource.MusicaCriada, resultado);
     }
@@ -47,7 +49,7 @@ public class ArmazenadorDeMusicasTest
         var musicaDto = SetupCreateMusicaDto(nome: musicaExistente.Nome);
         _mockMusicaRepositorio.Setup(x => x.ObterPorNome(musicaDto.NomeMusica)).ReturnsAsync(musicaExistente);
 
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto, album, banda));
+        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto));
         Assert.Equal(Resource.MusicaExistente, resultado.Message);
     }
 
@@ -60,7 +62,7 @@ public class ArmazenadorDeMusicasTest
 
         _mockMusicaRepositorio.Setup(x => x.Adicionar(It.IsAny<Musica>())).Returns(Task.FromResult(musica));
 
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto, album, null));
+        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto));
         Assert.Equal(Resource.BandaInexistente, resultado.Message);
     }
 
@@ -72,7 +74,7 @@ public class ArmazenadorDeMusicasTest
         musica.Banda = BandaBuilder.Novo().Build();
 
         _mockMusicaRepositorio.Setup(x => x.Adicionar(It.IsAny<Musica>())).Returns(Task.FromResult(musica));
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto, null, musica.Banda));
+        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto));
         
         Assert.Equal(Resource.AlbumInexistente, resultado.Message);
     }
