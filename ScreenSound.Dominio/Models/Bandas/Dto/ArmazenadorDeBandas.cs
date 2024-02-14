@@ -47,7 +47,7 @@ public class ArmazenadorDeBandas : IArmazenadorBanda
         if (bandaSalva != null)
             throw new ArgumentException(Resource.BandaJaExiste);
 
-        Banda newBanda = new(dto.Nome, dto.Descricao);
+        Banda newBanda = new(dto.Nome, dto.Descricao, dto.Imagem);
         await _bandaRepositorio.Adicionar(newBanda);
 
         return Resource.BandaCriada;

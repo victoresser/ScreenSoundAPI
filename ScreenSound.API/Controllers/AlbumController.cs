@@ -50,7 +50,7 @@ namespace ScreenSound.API.Controllers
                     BandaId = x.BandaId,
                     Banda = x.Banda?.Nome ?? string.Empty,
                     Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum)
-                }).Where(x => x.Nome.Contains(nomeAlbum)).ToList();
+                }).Where(x => x.Nome.Contains(nomeAlbum)).ToList().OrderBy(x => x.Nome);
 
                 return dto.Any() ? dto : new List<ListagemDeAlbuns>();
             }
@@ -65,7 +65,7 @@ namespace ScreenSound.API.Controllers
                     BandaId = x.BandaId,
                     Banda = x.Banda?.Nome ?? string.Empty,
                     Musicas = conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum),
-                }).Skip(skip).Take(take).ToList();
+                }).Skip(skip).Take(take).ToList().OrderBy(x => x.Nome);
 
                 return dto.Any() ? dto : new List<ListagemDeAlbuns>();
             }
@@ -81,7 +81,6 @@ namespace ScreenSound.API.Controllers
         /// <returns></returns>
         [HttpGet("listarTopFive")]
         public async Task<IEnumerable<ListagemDeAlbuns>> GetTopFive(
-            [FromServices] IConversorMusicasDoAlbum conversor,
             [FromQuery] int skip = 0,
             [FromQuery] int take = 5,
             string? nome = null)
@@ -155,10 +154,11 @@ namespace ScreenSound.API.Controllers
 
         // PUT api/<AlbumController>/5
         [HttpPut("editar/{id:int}")]
-        public async Task<IActionResult> Put(EditAlbumDto dto, [FromServices] IArmazenadorAlbum armazenadorAlbum, int id)
+        public async Task<IActionResult> Put(EditAlbumDto dto, [FromServices] IArmazenadorAlbum armazenadorAlbum,
+            int id)
         {
             if (id <= 0) return NotFound(Resource.AlbumInexistente);
-            
+
             await armazenadorAlbum.Editar(dto);
 
             return Ok(await GetForId(id));
@@ -173,7 +173,6 @@ namespace ScreenSound.API.Controllers
             if (album == null) return NotFound("Album não encontrado!");
             await _albumRepositorio.Deletar(album.Id);
             return NoContent();
-
         }
     }
 }

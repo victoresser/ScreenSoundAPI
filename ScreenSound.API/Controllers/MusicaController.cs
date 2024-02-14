@@ -12,15 +12,12 @@ namespace ScreenSound.API.Controllers
     public class MusicaController : ControllerBase
     {
         private readonly IMusicaRepositorio _musicaRepositorio;
-        private readonly IBandaRepositorio _bandaRepositorio;
-        private readonly IAlbumRepositorio _albumRepositorio;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public MusicaController(IMusicaRepositorio musicaRepositorio, IBandaRepositorio bandaRepositorio,
-            IAlbumRepositorio albumRepositorio)
+        public MusicaController(IMusicaRepositorio musicaRepositorio, IWebHostEnvironment hostEnvironment)
         {
             _musicaRepositorio = musicaRepositorio;
-            _bandaRepositorio = bandaRepositorio;
-            _albumRepositorio = albumRepositorio;
+            _hostEnvironment = hostEnvironment;
         }
 
         /// <summary>
@@ -44,7 +41,7 @@ namespace ScreenSound.API.Controllers
                     Banda = x.Banda.Nome,
                     Album = x.Album.Nome,
                     Disponivel = x.Disponivel
-                }).Where(x => x.Nome.Contains(nomeMusica)).Skip(skip).Take(take).ToList();
+                }).Where(x => x.Nome.Contains(nomeMusica)).Skip(skip).Take(take).ToList().OrderBy(x => x.Nome);
 
                 return dto.Any() ? dto : new List<ListagemDeMusicas>();
             }
@@ -58,7 +55,7 @@ namespace ScreenSound.API.Controllers
                 Banda = x.Banda.Nome,
                 Album = x.Album.Nome,
                 Disponivel = x.Disponivel
-            }).Skip(skip).Take(take).ToList();
+            }).Skip(skip).Take(take).ToList().OrderBy(x => x.Nome);
 
             return dtos.Any() ? dtos : new List<ListagemDeMusicas>();
         }
@@ -141,7 +138,32 @@ namespace ScreenSound.API.Controllers
         public async Task<IActionResult> Post(CreateMusicaDto dto, [FromServices] IArmazenadorMusica armazenadorMusica)
         {
             await armazenadorMusica.Armazenar(dto);
-            return Ok(await Get(dto.NomeMusica));
+            return Ok(await Get(dto.Nome));
+        }
+
+        [HttpPost("salvarImagem/{musicaId}")]
+        public async Task<IActionResult> SalvarImagem(int musicaId, [FromForm] IFormFile imagem)
+        {
+            try
+            {
+                // Criar o caminho completo para salvar a imagem no servidor
+                var caminho = Path.Combine(_hostEnvironment.WebRootPath, "assets", "musicas", $"{imagem.FileName}");
+
+                // Garantir que o diretório existe
+                Directory.CreateDirectory(Path.GetDirectoryName(caminho));
+
+                // Salvar a imagem
+                using (var stream = new FileStream(caminho, FileMode.Create))
+                {
+                    imagem.CopyTo(stream);
+                }
+
+                return Ok(new { mensagem = "Imagem salva com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { erro = "Erro ao salvar a imagem", detalhes = ex.Message });
+            }
         }
 
         /// <summary>

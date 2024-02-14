@@ -43,11 +43,9 @@ public class ArmazenadorDeMusicasTest
     public async void NaoDeveAdicionarMusicaComMesmoNome()
     {
         var musicaExistente = MusicaBuilder.Novo().Build();
-        var banda = BandaBuilder.Novo().Build();
-        var album = AlbumBuilder.Novo().Build();
 
         var musicaDto = SetupCreateMusicaDto(nome: musicaExistente.Nome);
-        _mockMusicaRepositorio.Setup(x => x.ObterPorNome(musicaDto.NomeMusica)).ReturnsAsync(musicaExistente);
+        _mockMusicaRepositorio.Setup(x => x.ObterPorNome(musicaDto.Nome)).ReturnsAsync(musicaExistente);
 
         var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto));
         Assert.Equal(Resource.MusicaExistente, resultado.Message);
@@ -83,7 +81,7 @@ public class ArmazenadorDeMusicasTest
     {
         return new CreateMusicaDto
         {
-            NomeMusica = string.IsNullOrEmpty(nome) ? _faker.Random.Words(1) : nome,
+            Nome = string.IsNullOrEmpty(nome) ? _faker.Random.Words(1) : nome,
             NomeBanda = string.IsNullOrEmpty(nomeBanda) ? _faker.Name.FirstName() : nomeBanda,
             NomeAlbum = string.IsNullOrEmpty(nomeAlbum) ? _faker.Name.FirstName() : nomeAlbum,
             Duracao = duracao ?? _faker.Random.Short(10, 256),

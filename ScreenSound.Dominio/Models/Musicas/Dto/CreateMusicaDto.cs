@@ -2,7 +2,7 @@
 
 public class CreateMusicaDto
 {
-    public string NomeMusica { get; set; }
+    public string Nome { get; set; }
     public string NomeAlbum { get; set; }
     public string NomeBanda { get; set; }
     public short Duracao { get; set; }

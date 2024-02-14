@@ -48,7 +48,7 @@ namespace ScreenSound.API.Controllers
                     Imagem = x.Imagem,
                     Descricao = x.Descricao,
                     Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda)
-                }).Skip(skip).Take(take).ToList();
+                }).Skip(skip).Take(take).ToList().OrderBy(x => x.Nome);
 
                 return dto.Any() ? dto : new List<ListagemDeBandas>();
             }
@@ -60,7 +60,7 @@ namespace ScreenSound.API.Controllers
                 Imagem = x.Imagem,
                 Descricao = x.Descricao,
                 Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda)
-            }).Where(x => x.Nome.Contains(nomeBanda)).Skip(skip).Take(take).ToList();
+            }).Where(x => x.Nome.Contains(nomeBanda)).Skip(skip).Take(take).ToList().OrderBy(x => x.Nome);
 
             return dtos.Any() ? dtos : new List<ListagemDeBandas>();
 

@@ -22,9 +22,8 @@ public class RepositorioBase<TEntity> : IRepositorio<TEntity> where TEntity : En
 
     public virtual async Task<List<TEntity>> ConsultarAsync()
     {
-        var query = Context.Set<TEntity>().ToListAsync();
-
-        return await query;
+        var query = await Context.Set<TEntity>().ToListAsync();
+        return query;
     }
 
     public async Task Deletar(int id)

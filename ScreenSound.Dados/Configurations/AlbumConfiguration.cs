@@ -32,7 +32,8 @@ public class AlbumConfiguration : IEntityTypeConfiguration<Album>
             .HasColumnName("caminhoDaImagem")
             .HasDefaultValue("");
 
-        builder.HasOne(x => x.Banda)
+        builder
+            .HasOne(x => x.Banda)
             .WithMany(x => x.AlbunsDaBanda)
             .HasForeignKey(x => x.BandaId).IsRequired();
 

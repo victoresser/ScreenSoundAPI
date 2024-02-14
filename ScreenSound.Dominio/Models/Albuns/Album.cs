@@ -20,11 +20,6 @@ public class Album : Entity<Album>
         Imagem = imagem;
     }
 
-    public override string ToString()
-    {
-        return $"{Nome}";
-    }
-
     public void AlterarNome(string nome)
     {
         Nome = nome;
