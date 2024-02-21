@@ -10,7 +10,6 @@ public class ScreenSoundContext : DbContext
 {
     public ScreenSoundContext(DbContextOptions<ScreenSoundContext> opts) : base(opts)
     {
-
     }
 
     public DbSet<Banda> Bandas { get; set; }
@@ -19,7 +18,6 @@ public class ScreenSoundContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
         // Banda
         modelBuilder.ApplyConfiguration(new BandaConfiguration());
 
@@ -27,6 +25,6 @@ public class ScreenSoundContext : DbContext
         modelBuilder.ApplyConfiguration(new MusicaConfiguration());
 
         // Album
-        modelBuilder.ApplyConfiguration(new  AlbumConfiguration());
+        modelBuilder.ApplyConfiguration(new AlbumConfiguration());
     }
 }

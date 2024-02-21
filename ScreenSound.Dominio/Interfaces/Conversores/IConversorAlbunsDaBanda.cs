@@ -1,6 +1,6 @@
 ﻿using ScreenSound.Dominio.Models.Albuns;
 
-namespace ScreenSound.Dominio.Services.Conversores;
+namespace ScreenSound.Dominio.Interfaces.Conversores;
 
 public interface IConversorAlbunsDaBanda
 {

@@ -1,4 +1,4 @@
-﻿namespace ScreenSound.Dominio.Services;
+﻿namespace ScreenSound.Dominio.Interfaces;
 
 public interface IRepositorio<TEntity>
 {

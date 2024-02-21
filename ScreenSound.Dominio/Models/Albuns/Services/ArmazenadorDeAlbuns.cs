@@ -1,7 +1,7 @@
 ﻿using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces.Armazenadores;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Bandas;
-using ScreenSound.Dominio.Services.Armazenadores;
-using ScreenSound.Dominio.Services.Repositorios;
 
 namespace ScreenSound.Dominio.Models.Albuns.Dto;
 
@@ -16,7 +16,7 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
         _bandaRepositorio = bandaRepositorio;
     }
 
-    public async Task<string> Armazenar(string nome, Banda banda)
+    public async Task<string> Armazenar(string nome, Banda? banda)
     {
         var albumSalvo = await _albumRepositorio.ObterPorNome(nome);
 
@@ -42,7 +42,6 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
 
     public async Task<string> Editar(EditAlbumDto dto)
     {
-
         var album = await _albumRepositorio.ObterPorId(dto.Id);
         var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
 

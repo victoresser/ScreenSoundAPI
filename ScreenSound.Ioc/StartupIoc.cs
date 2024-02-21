@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ScreenSound.Dados;
 using ScreenSound.Dados.Repositorios;
+using ScreenSound.Dominio.Interfaces;
+using ScreenSound.Dominio.Interfaces.Armazenadores;
+using ScreenSound.Dominio.Interfaces.Conversores;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns.Dto;
 using ScreenSound.Dominio.Models.Bandas.Dto;
 using ScreenSound.Dominio.Models.Musicas.Dto;
-using ScreenSound.Dominio.Services;
-using ScreenSound.Dominio.Services.Armazenadores;
-using ScreenSound.Dominio.Services.Conversores;
-using ScreenSound.Dominio.Services.Repositorios;
 
 namespace ScreenSound.Ioc;
 

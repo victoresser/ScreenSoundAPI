@@ -1,8 +1,8 @@
 ﻿using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces.Armazenadores;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns;
 using ScreenSound.Dominio.Models.Bandas;
-using ScreenSound.Dominio.Services.Armazenadores;
-using ScreenSound.Dominio.Services.Repositorios;
 
 namespace ScreenSound.Dominio.Models.Musicas.Dto;
 
@@ -28,7 +28,7 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
 
         if (musicaJaSalva != null && musicaJaSalva.Nome == dto.Nome)
             throw new ArgumentException(Resource.MusicaExistente);
-        
+
         if (banda == null)
             throw new ArgumentException(Resource.BandaInexistente);
 
@@ -81,7 +81,7 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
             musica.AlterarDuracao((short)dto.Duracao);
             await Console.Out.WriteLineAsync($"A duração desta música foi alterada para {musica.Duracao}");
         }
-        
+
         musica.AlterarDisponibilidade(dto.DisponibilidadeMusica);
         await Console.Out.WriteLineAsync($"A disponibilidade desta música foi alterarada para {musica.Disponivel}");
 

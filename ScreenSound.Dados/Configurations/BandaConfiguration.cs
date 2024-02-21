@@ -36,6 +36,5 @@ public class BandaConfiguration : IEntityTypeConfiguration<Banda>
 
         builder.Ignore(x => x.RuleLevelCascadeMode);
         builder.Ignore(x => x.ClassLevelCascadeMode);
-        builder.Ignore(x => x.CascadeMode);
     }
 }

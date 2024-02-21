@@ -1,4 +1,5 @@
-﻿using ScreenSound.Dominio.Services;
+﻿using ScreenSound.Dominio.Interfaces;
+using ScreenSound.Dominio.Services;
 
 namespace ScreenSound.Dados;
 

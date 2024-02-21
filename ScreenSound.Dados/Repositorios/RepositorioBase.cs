@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ScreenSound.Dominio;
+using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Dominio.Models;
 using ScreenSound.Dominio.Services;
 
@@ -14,18 +14,10 @@ public class RepositorioBase<TEntity> : IRepositorio<TEntity> where TEntity : En
         Context = context;
     }
 
-    public async Task Adicionar(TEntity entity)
-    {
-        await Context.Set<TEntity>().AddAsync(entity);
-        await Context.SaveChangesAsync();
-    }
-
-    public virtual async Task<List<TEntity>> ConsultarAsync()
-    {
-        var query = await Context.Set<TEntity>().ToListAsync();
-        return query;
-    }
-
+    public async Task Adicionar(TEntity entity) => await Context.Set<TEntity>().AddAsync(entity);
+    
+    public virtual async Task<List<TEntity>> ConsultarAsync() => await Context.Set<TEntity>().ToListAsync();
+    
     public async Task Deletar(int id)
     {
         var query = Context.Set<TEntity>().Where(t => t.Id == id);

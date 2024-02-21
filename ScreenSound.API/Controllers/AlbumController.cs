@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces.Armazenadores;
+using ScreenSound.Dominio.Interfaces.Conversores;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns.Dto;
-using ScreenSound.Dominio.Services.Armazenadores;
-using ScreenSound.Dominio.Services.Conversores;
-using ScreenSound.Dominio.Services.Repositorios;
 
 namespace ScreenSound.API.Controllers
 {

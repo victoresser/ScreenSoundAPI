@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ScreenSound.Dominio.Interfaces.Armazenadores;
+using ScreenSound.Dominio.Interfaces.Conversores;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Bandas.Dto;
-using ScreenSound.Dominio.Services.Armazenadores;
-using ScreenSound.Dominio.Services.Conversores;
-using ScreenSound.Dominio.Services.Repositorios;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

@@ -1,6 +1,6 @@
 ﻿using ScreenSound.Dominio.Models.Bandas;
 
-namespace ScreenSound.Dominio.Services.Repositorios;
+namespace ScreenSound.Dominio.Interfaces.Repositorios;
 
 public interface IBandaRepositorio : IRepositorio<Banda>
 {

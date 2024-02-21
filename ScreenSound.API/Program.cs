@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ScreenSound.Dados;
-using ScreenSound.Dominio.Services;
+using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Ioc;
 
 namespace ScreenSound.API;

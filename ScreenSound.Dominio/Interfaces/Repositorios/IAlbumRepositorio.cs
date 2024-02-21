@@ -1,6 +1,6 @@
 ﻿using ScreenSound.Dominio.Models.Albuns;
 
-namespace ScreenSound.Dominio.Services.Repositorios;
+namespace ScreenSound.Dominio.Interfaces.Repositorios;
 
 public interface IAlbumRepositorio : IRepositorio<Album>
 {

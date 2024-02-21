@@ -2,9 +2,9 @@
 using FluentValidation.TestHelper;
 using Moq;
 using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns;
 using ScreenSound.Dominio.Models.Albuns.Dto;
-using ScreenSound.Dominio.Services.Repositorios;
 using ScreenSound.DominioTeste._Builder;
 
 namespace ScreenSound.DominioTeste.Albuns;
@@ -42,9 +42,12 @@ public class ArmazenadorDeAlbunsTest
         var albumExistente = AlbumBuilder.Novo().ComBanda(banda).Build();
         var album = AlbumBuilder.Novo().ComNome(albumExistente.Nome).Build();
 
-        _mockAlbumRepositorio.Setup(x => x.ObterPorNome(album.Nome)).ReturnsAsync(albumExistente);
+        _mockAlbumRepositorio
+            .Setup(x => x.ObterPorNome(album.Nome))
+            .ReturnsAsync(albumExistente);
 
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, banda));
+        var resultado =
+            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, banda));
         Assert.Equal(Resource.AlbumExistente, resultado.Message);
     }
 
@@ -55,9 +58,13 @@ public class ArmazenadorDeAlbunsTest
         var banda = BandaBuilder.Novo().Build();
         var album = AlbumBuilder.Novo().ComNome(nomeInvalido).Build();
 
-        _mockAlbumRepositorio.Setup(r => r.Adicionar(It.IsAny<Album>())).Returns(Task.FromResult(album));
+        _mockAlbumRepositorio
+            .Setup(r => r
+            .Adicionar(It.IsAny<Album>()))
+            .Returns(Task.FromResult(album));
 
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, banda));
+        var resultado =
+            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, banda));
         Assert.Equal(Resource.NomeAlbumInvalido, resultado.Message);
     }
 
@@ -66,9 +73,12 @@ public class ArmazenadorDeAlbunsTest
     {
         var album = AlbumBuilder.Novo().Build();
 
-        _mockAlbumRepositorio.Setup(r => r.Adicionar(It.IsAny<Album>())).Returns(Task.FromResult(album));
+        _mockAlbumRepositorio
+            .Setup(r => r.Adicionar(It.IsAny<Album>()))
+            .Returns(Task.FromResult(album));
 
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, null));
+        var resultado =
+            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, null));
         Assert.Equal(Resource.BandaInvalida, resultado.Message);
     }
 

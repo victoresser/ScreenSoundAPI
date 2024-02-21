@@ -1,11 +1,11 @@
 ﻿using Bogus;
 using Moq;
 using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns;
 using ScreenSound.Dominio.Models.Bandas;
 using ScreenSound.Dominio.Models.Musicas;
 using ScreenSound.Dominio.Models.Musicas.Dto;
-using ScreenSound.Dominio.Services.Repositorios;
 using ScreenSound.DominioTeste._Builder;
 
 namespace ScreenSound.DominioTeste.Musicas;

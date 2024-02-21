@@ -1,5 +1,5 @@
-﻿using ScreenSound.Dominio.Models.Albuns;
-using ScreenSound.Dominio.Services.Conversores;
+﻿using ScreenSound.Dominio.Interfaces.Conversores;
+using ScreenSound.Dominio.Models.Albuns;
 
 namespace ScreenSound.Dominio.Models.Bandas.Dto;
 

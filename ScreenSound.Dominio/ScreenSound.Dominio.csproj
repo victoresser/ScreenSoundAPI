@@ -12,4 +12,16 @@
     <PackageReference Include="OpenAI" Version="1.7.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Models\Usuario\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Models\Usuario\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Models\Usuario\**" />
+  </ItemGroup>
+
 </Project>

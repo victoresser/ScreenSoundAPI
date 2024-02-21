@@ -1,7 +1,7 @@
 ﻿using ScreenSound.Dominio.Models.Albuns.Dto;
 using ScreenSound.Dominio.Models.Bandas;
 
-namespace ScreenSound.Dominio.Services.Armazenadores;
+namespace ScreenSound.Dominio.Interfaces.Armazenadores;
 
 public interface IArmazenadorAlbum
 {

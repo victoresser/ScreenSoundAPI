@@ -1,7 +1,7 @@
 ﻿using OpenAI_API;
 using ScreenSound.Dominio._Base;
-using ScreenSound.Dominio.Services.Armazenadores;
-using ScreenSound.Dominio.Services.Repositorios;
+using ScreenSound.Dominio.Interfaces.Armazenadores;
+using ScreenSound.Dominio.Interfaces.Repositorios;
 
 namespace ScreenSound.Dominio.Models.Bandas.Dto;
 
