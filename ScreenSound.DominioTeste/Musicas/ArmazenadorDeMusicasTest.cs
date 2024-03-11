@@ -22,9 +22,9 @@ public class ArmazenadorDeMusicasTest
     {
         _faker = new Faker();
         _mockMusicaRepositorio = new Mock<IMusicaRepositorio>();
-        Mock<IBandaRepositorio> mockBandaRepositorio = new();
-        Mock<IAlbumRepositorio> mockAlbumRepositorio = new();
-        _armazenadorMusica = new ArmazenadorDeMusicas(_mockMusicaRepositorio.Object, mockBandaRepositorio.Object, mockAlbumRepositorio.Object);
+        _mockBandaRepositorio = new Mock<IBandaRepositorio>();
+        _mockAlbumRepositorio = new Mock<IAlbumRepositorio>();
+        _armazenadorMusica = new ArmazenadorDeMusicas(_mockMusicaRepositorio.Object, _mockBandaRepositorio.Object, _mockAlbumRepositorio.Object);
     }
 
     [Fact]
@@ -32,9 +32,24 @@ public class ArmazenadorDeMusicasTest
     {
         var banda = BandaBuilder.Novo().Build();
         var album = AlbumBuilder.Novo().ComBanda(banda).Build();
-        var musicaDto = SetupCreateMusicaDto(nomeBanda: banda.Nome, nomeAlbum: album.Nome);
+        var musica = MusicaBuilder.Novo().ComBanda(banda).Build();
+        var setup = SetupCreateMusicaDto();
+
+        _mockBandaRepositorio
+            .Setup(b =>
+                b.ObterPorNome(setup.NomeBanda))
+            .ReturnsAsync(banda);
+
+        _mockAlbumRepositorio.Setup(a =>
+                a.ObterPorNome(setup.NomeAlbum))
+            .ReturnsAsync(album);
+
+        _mockMusicaRepositorio
+            .Setup(m =>
+                m.ObterPorNome(setup.Nome))
+            .ReturnsAsync(musica);
         
-        var resultado = await _armazenadorMusica.Armazenar(musicaDto);
+        var resultado = await _armazenadorMusica.Armazenar(setup);
 
         Assert.Equal(Resource.MusicaCriada, resultado);
     }
@@ -43,11 +58,14 @@ public class ArmazenadorDeMusicasTest
     public async void NaoDeveAdicionarMusicaComMesmoNome()
     {
         var musicaExistente = MusicaBuilder.Novo().Build();
+        var setup = SetupCreateMusicaDto(nome: musicaExistente.Nome);
+        
+        _mockMusicaRepositorio
+            .Setup(x => 
+                x.ObterPorNome(setup.Nome))
+            .ReturnsAsync(musicaExistente);
 
-        var musicaDto = SetupCreateMusicaDto(nome: musicaExistente.Nome);
-        _mockMusicaRepositorio.Setup(x => x.ObterPorNome(musicaDto.Nome)).ReturnsAsync(musicaExistente);
-
-        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto));
+        var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(setup));
         Assert.Equal(Resource.MusicaExistente, resultado.Message);
     }
 
@@ -71,7 +89,11 @@ public class ArmazenadorDeMusicasTest
         var musica = MusicaBuilder.Novo().Build();
         musica.Banda = BandaBuilder.Novo().Build();
 
-        _mockMusicaRepositorio.Setup(x => x.Adicionar(It.IsAny<Musica>())).Returns(Task.FromResult(musica));
+        _mockBandaRepositorio
+            .Setup(b => 
+                b.ObterPorNome(musicaDto.NomeBanda))
+            .ReturnsAsync(musica.Banda);
+        
         var resultado = await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorMusica.Armazenar(musicaDto));
         
         Assert.Equal(Resource.AlbumInexistente, resultado.Message);

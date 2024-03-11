@@ -5,6 +5,7 @@ using ScreenSound.Dominio._Base;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns;
 using ScreenSound.Dominio.Models.Albuns.Dto;
+using ScreenSound.Dominio.Models.Bandas;
 using ScreenSound.DominioTeste._Builder;
 
 namespace ScreenSound.DominioTeste.Albuns;
@@ -29,8 +30,17 @@ public class ArmazenadorDeAlbunsTest
     {
         var album = AlbumBuilder.Novo().Build();
         var banda = BandaBuilder.Novo().Build();
+        var setup = SetupCreateAlbumDto(nomeBanda: banda.Nome);
 
-        var resultado = await _armazenadorDeAlbuns.Armazenar(album.Nome, banda);
+        _mockAlbumRepositorio
+            .Setup(a => a.ObterPorNome(setup.Nome))
+            .ReturnsAsync(album);
+        
+        _mockBandaRepositorio
+            .Setup(b => b.ObterPorNome(banda.Nome))
+            .ReturnsAsync(banda);
+        
+        var resultado = await _armazenadorDeAlbuns.Armazenar(setup);
 
         Assert.Equal(Resource.AlbumCriado, resultado);
     }
@@ -41,13 +51,17 @@ public class ArmazenadorDeAlbunsTest
         var banda = BandaBuilder.Novo().Build();
         var albumExistente = AlbumBuilder.Novo().ComBanda(banda).Build();
         var album = AlbumBuilder.Novo().ComNome(albumExistente.Nome).Build();
+        var setup = SetupCreateAlbumDto(album.Nome, banda.Nome);
 
         _mockAlbumRepositorio
             .Setup(x => x.ObterPorNome(album.Nome))
             .ReturnsAsync(albumExistente);
+        _mockBandaRepositorio
+            .Setup(x => x.ObterPorNome(banda.Nome))
+            .ReturnsAsync(banda);
 
         var resultado =
-            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, banda));
+            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(setup));
         Assert.Equal(Resource.AlbumExistente, resultado.Message);
     }
 
@@ -55,31 +69,37 @@ public class ArmazenadorDeAlbunsTest
     public async void NaoDeveAdicionarAlbumComNomeMaiorQue255Caracteres()
     {
         var nomeInvalido = _faker.Random.Words(300);
-        var banda = BandaBuilder.Novo().Build();
-        var album = AlbumBuilder.Novo().ComNome(nomeInvalido).Build();
+        var album = AlbumBuilder.Novo().Build();
+        var setup = SetupCreateAlbumDto(nome: nomeInvalido);
+        var banda = await BandaBuilder.Novo().ComNome(setup.NomeBanda).BuildAsync();
+
+        _mockBandaRepositorio
+            .Setup(r =>
+                r.ObterPorNome(banda.Nome))
+            .ReturnsAsync(banda);
 
         _mockAlbumRepositorio
-            .Setup(r => r
-            .Adicionar(It.IsAny<Album>()))
-            .Returns(Task.FromResult(album));
+            .Setup(a =>
+                a.ObterPorNome(setup.Nome))
+            .ReturnsAsync(album);
 
         var resultado =
-            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, banda));
+            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(setup));
         Assert.Equal(Resource.NomeAlbumInvalido, resultado.Message);
     }
 
     [Fact]
     public async void NaoDeveAdicionarAlbumSemArtista()
     {
-        var album = AlbumBuilder.Novo().Build();
+        var setup = SetupCreateAlbumDto(nomeBanda: null);
 
         _mockAlbumRepositorio
             .Setup(r => r.Adicionar(It.IsAny<Album>()))
-            .Returns(Task.FromResult(album));
+            .Returns(Task.FromResult(setup));
 
         var resultado =
-            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(album.Nome, null));
-        Assert.Equal(Resource.BandaInvalida, resultado.Message);
+            await Assert.ThrowsAsync<ArgumentException>(() => _armazenadorDeAlbuns.Armazenar(setup));
+        Assert.Equal(Resource.BandaInexistente, resultado.Message);
     }
 
     // [Fact]
@@ -98,16 +118,19 @@ public class ArmazenadorDeAlbunsTest
     //     Assert.Equal(albumDto.Banda, album.Banda);
     // }
 
-
-    private EditAlbumDto SetupEditAlbumDto(int id = 0, string? nome = null, string? nomeBanda = null,
-        string? imagem = null)
-    {
-        return new EditAlbumDto
+    private EditAlbumDto SetupEditAlbumDto(string? nome, string? nomeBanda, string? imagem,int id = 0)
+        => new()
         {
             Id = id == 0 ? _faker.Random.Int(1, 10) : id,
             Nome = string.IsNullOrEmpty(nome) ? _faker.Name.FirstName() : nome,
             NomeBanda = string.IsNullOrEmpty(nomeBanda) ? _faker.Name.FirstName() : nomeBanda,
             Imagem = string.IsNullOrEmpty(imagem) ? _faker.Image.ToString() : imagem
         };
-    }
+
+    private CreateAlbumDto SetupCreateAlbumDto(string? nome = null, string? nomeBanda = null)
+        => new()
+        {
+            Nome = string.IsNullOrEmpty(nome) ? _faker.Name.FirstName() : nome,
+            NomeBanda = string.IsNullOrEmpty(nomeBanda) ? _faker.Name.FirstName() : nomeBanda
+        };
 }

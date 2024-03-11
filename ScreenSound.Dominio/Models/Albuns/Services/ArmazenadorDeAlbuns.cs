@@ -16,34 +16,30 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
         _bandaRepositorio = bandaRepositorio;
     }
 
-    public async Task<string> Armazenar(string nome, Banda? banda)
+    public async Task<string> Armazenar(CreateAlbumDto dto)
     {
-        var albumSalvo = await _albumRepositorio.ObterPorNome(nome);
-
-        if (albumSalvo != null && albumSalvo.Nome == nome)
-        {
-            throw new ArgumentException(Resource.AlbumExistente);
-        }
-
-        if (!string.IsNullOrWhiteSpace(nome) && nome.Length > 255)
-        {
-            throw new ArgumentException(Resource.NomeAlbumInvalido);
-        }
+        var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
+        var album = await _albumRepositorio.ObterPorNome(dto.Nome);
 
         if (banda == null)
-        {
-            throw new ArgumentException(Resource.BandaInvalida);
-        }
+            throw new ArgumentException(Resource.BandaInexistente);
 
-        var newAlbum = new Album(nome, banda.Id);
+        if (album.Nome == dto.Nome)
+            throw new ArgumentException(Resource.AlbumExistente);
+
+        if (!string.IsNullOrEmpty(dto.Nome) && dto.Nome.Length > 255)
+            throw new ArgumentException(Resource.NomeAlbumInvalido);
+
+        var newAlbum = new Album(dto.Nome, banda.Id, dto.Imagem);
         await _albumRepositorio.Adicionar(newAlbum);
+        
         return Resource.AlbumCriado;
     }
 
     public async Task<string> Editar(EditAlbumDto dto)
     {
         var album = await _albumRepositorio.ObterPorId(dto.Id);
-        var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
+        var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda ?? string.Empty);
 
         if (album == null)
             return Resource.AlbumInexistente;

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Dominio.Models;
-using ScreenSound.Dominio.Services;
 
 namespace ScreenSound.Dados.Repositorios;
 

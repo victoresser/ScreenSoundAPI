@@ -18,7 +18,7 @@ public class MusicaRepositorio : RepositorioBase<Musica>, IMusicaRepositorio
             .ToListAsync();
     }
 
-    public virtual async Task<List<Musica>> ObterPorDataDeCriacaoAsync(DateOnly data)
+    public virtual async Task<List<Musica>> ObterPorAnoDeCriacaoAsync(DateOnly data)
     {
         return await Context.Set<Musica>()
             .Include(x => x.Banda)

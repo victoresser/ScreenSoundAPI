@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ScreenSound.Dominio._Base;
 using ScreenSound.Dominio.Interfaces.Armazenadores;
-using ScreenSound.Dominio.Interfaces.Conversores;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Bandas.Dto;
 
@@ -13,12 +13,12 @@ namespace ScreenSound.API.Controllers
     public class BandaController : ControllerBase
     {
         private readonly IBandaRepositorio _bandaRepositorio;
-        private readonly IConversorAlbunsDaBanda _conversor;
+        private readonly ConsultaListagemDeBandas _consultaListagemDeBandas;
 
-        public BandaController(IBandaRepositorio bandaRepositorio, IConversorAlbunsDaBanda conversor)
+        public BandaController(IBandaRepositorio bandaRepositorio, ConsultaListagemDeBandas consultaListagemDeBandas)
         {
             _bandaRepositorio = bandaRepositorio;
-            _conversor = conversor;
+            _consultaListagemDeBandas = consultaListagemDeBandas;
         }
 
         /// <summary>
@@ -30,41 +30,8 @@ namespace ScreenSound.API.Controllers
         /// <param name="nomeBanda">Nome da banda que se deseja listar</param>
         /// <returns></returns>
         [HttpGet("listar")]
-        public async Task<IEnumerable<ListagemDeBandas>> Get(
-            [FromServices] IConversorAlbunsDaBanda conversor,
-            [FromQuery] int skip = 0,
-            [FromQuery] int take = 10,
-            string? nomeBanda = null
-            )
-        {
-            var consulta = await _bandaRepositorio.ConsultarAsync();
-
-            if (string.IsNullOrWhiteSpace(nomeBanda))
-            {
-                var dto = consulta.Select(x => new ListagemDeBandas
-                {
-                    Id = x.Id,
-                    Nome = x.Nome,
-                    Imagem = x.Imagem,
-                    Descricao = x.Descricao,
-                    Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda)
-                }).Skip(skip).Take(take).ToList().OrderBy(x => x.Nome);
-
-                return dto.Any() ? dto : new List<ListagemDeBandas>();
-            }
-
-            var dtos = consulta.Select(x => new ListagemDeBandas
-            {
-                Id = x.Id,
-                Nome = x.Nome,
-                Imagem = x.Imagem,
-                Descricao = x.Descricao,
-                Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda)
-            }).Where(x => x.Nome.Contains(nomeBanda)).Skip(skip).Take(take).ToList().OrderBy(x => x.Nome);
-
-            return dtos.Any() ? dtos : new List<ListagemDeBandas>();
-
-        }
+        public async Task<IEnumerable<ListagemDeBandas>> Get([FromQuery] int skip = 0, [FromQuery] int take = 10,
+            string? nomeBanda = null) => await _consultaListagemDeBandas.RetornaListagemDeBandas(nomeBanda, skip, take);
         
         /// <summary>
         /// GET api/BandaController/listarTopFive
@@ -75,39 +42,8 @@ namespace ScreenSound.API.Controllers
         /// <param name="nomeBanda"></param>
         /// <returns></returns>
         [HttpGet("listarTopFive")]
-        public async Task<IEnumerable<ListagemDeBandas>> GetTopFive(
-            [FromServices] IConversorAlbunsDaBanda conversor,
-            [FromQuery] int skip = 0,
-            [FromQuery] int take = 5,
-            string? nomeBanda = null
-            )
-        {
-            var consulta = await _bandaRepositorio.ConsultarAsync();
-
-            if (nomeBanda == null)
-            {
-                var dto = consulta.Select(x => new ListagemDeBandas
-                {
-                    Nome = x.Nome,
-                    Imagem = x.Imagem,
-                    Descricao = x.Descricao,
-                    Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda)
-                }).Skip(skip).Take(take).ToList();
-
-                return dto.Any() ? dto : new List<ListagemDeBandas>();
-            }
-
-            var dtos = consulta.Select(x => new ListagemDeBandas
-            {
-                Nome = x.Nome,
-                Imagem = x.Imagem,
-                Descricao = x.Descricao,
-                Albuns = conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda)
-            }).Where(x => x.Nome.Equals(nomeBanda)).Skip(skip).Take(take).ToList();
-
-            return dtos.Any() ? dtos : new List<ListagemDeBandas>();
-
-        }
+        public async Task<IEnumerable<ListagemDeBandas>> GetTopFive([FromQuery] int skip = 0, [FromQuery] int take = 5,
+            string? nomeBanda = null) => await _consultaListagemDeBandas.RetornaListagemDeBandas(nomeBanda, skip, take);
 
         /// <summary>
         /// GET api/<BandaController>/listar/5
@@ -116,22 +52,10 @@ namespace ScreenSound.API.Controllers
         /// <param name="conversor"></param>
         /// <returns></returns>
         [HttpGet("listar/{id:int}")]
-        public async Task<IActionResult> GetForId(int id, [FromServices] IConversorAlbunsDaBanda conversor)
+        public async Task<IActionResult> GetForId(int id)
         {
-            var consulta = await _bandaRepositorio.ObterPorIdAsync(id);
-
-            if (consulta == null)
-                return NotFound(new ListagemDeBandas());
-
-            var dto = new ListagemDeBandas
-            {
-                Nome = consulta.Nome,
-                Imagem = consulta.Imagem,
-                Descricao = consulta.Descricao,
-                Albuns = conversor.ConverterParaListagemDeAlbuns(consulta.AlbunsDaBanda)
-            };
-
-            return Ok(dto);
+            var consulta = await _consultaListagemDeBandas.RetornarBandaPorId(id);
+            return Ok(consulta);
         }
 
         /// <summary>
@@ -146,24 +70,35 @@ namespace ScreenSound.API.Controllers
         public async Task<IActionResult> Post(CreateBandaDto dto, [FromServices] IArmazenadorBanda armazenadorBanda)
         {
             await armazenadorBanda.Armazenar(dto);
-            return Ok(await Get(nomeBanda: dto.Nome, conversor: _conversor));
+            return Ok(await Get(nomeBanda: dto.Nome));
         }
-
-        // PUT api/<BandaController>/5
+        
+        /// <summary>
+        /// PUT api/<BandaController>/5
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <param name="armazenadorBanda"></param>
+        /// <returns></returns>
         [HttpPut("editar/{id:int}")]
         public async Task<IActionResult> Put(int id, [FromBody] EditBandaDto dto,[FromServices] IArmazenadorBanda armazenadorBanda)
         {
             await armazenadorBanda.Editar(id, dto.Nome, dto.Descricao);
-            return Ok(await GetForId(id, _conversor));
+            return Ok(await GetForId(id));
         }
-
-        // DELETE api/<BandaController>/5
+        
+        /// <summary>
+        /// DELETE api/<BandaController>/5
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var dto = await _bandaRepositorio.ObterPorIdAsync(id);
+            
             await _bandaRepositorio.Deletar(dto.Id);
-            return NoContent();
+            return Ok(Resource.BandaExcluida);
         }
     }
 }

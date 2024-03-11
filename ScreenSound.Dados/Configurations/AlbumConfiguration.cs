@@ -39,5 +39,6 @@ public class AlbumConfiguration : IEntityTypeConfiguration<Album>
 
         builder.Ignore(x => x.RuleLevelCascadeMode);
         builder.Ignore(x => x.ClassLevelCascadeMode);
+        builder.Ignore(x => x.CascadeMode);
     }
 }

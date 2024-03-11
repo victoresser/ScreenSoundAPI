@@ -9,7 +9,7 @@ public class Album : Entity<Album>
 {
     public int BandaId { get; set; }
     public string? Imagem { get; set; }
-    public virtual Banda? Banda { get; set; }
+    public virtual Banda Banda { get; set; }
     public DateTime DataDeCriacao { get; set; }
     public virtual ICollection<Musica>? MusicasDoAlbum { get; set; }
 

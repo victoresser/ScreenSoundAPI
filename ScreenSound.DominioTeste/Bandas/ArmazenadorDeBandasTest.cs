@@ -73,8 +73,6 @@ public class ArmazenadorDeBandasTest
         var banda = await BandaBuilder.Novo()
             .ComDescricao(descricaoInvalida)
             .BuildAsync();
-        
-        
 
         _mockRepositorioBanda.Setup(r => r.Adicionar(It.IsAny<Banda>())).Returns(Task.FromResult(banda));
 

@@ -54,5 +54,6 @@ public class MusicaConfiguration : IEntityTypeConfiguration<Musica>
 
         builder.Ignore(x => x.RuleLevelCascadeMode);
         builder.Ignore(x => x.ClassLevelCascadeMode);
+        builder.Ignore(x => x.CascadeMode);
     }
 }

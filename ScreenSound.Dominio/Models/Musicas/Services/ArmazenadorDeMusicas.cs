@@ -38,9 +38,9 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
         if (dto.Nome != null && dto.Nome.Length > 255)
             throw new ArgumentException(Resource.NomeAlbumInvalido);
 
-        if (string.IsNullOrWhiteSpace(dto.Nome) || banda == null || album == null)
+        if (string.IsNullOrWhiteSpace(dto.Nome))
             throw new ArgumentException(
-                "Erro | Aparentemente, algo deu errado com o registro desta música, verifique as informações inseridas"
+                "Erro | O nome da música não pode estar vazio."
             );
 
         var musica = new Musica(dto.Nome, dto.Duracao, album.Id, banda.Id, dto.Disponibilidade, dto.Imagem);

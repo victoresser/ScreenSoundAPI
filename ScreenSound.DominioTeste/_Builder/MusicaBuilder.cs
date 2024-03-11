@@ -54,13 +54,13 @@ public class MusicaBuilder
         return this;
     }
 
-    public MusicaBuilder ComAlbumId(Album album)
+    public MusicaBuilder ComAlbum(Album album)
     {
         Album = album;
         return this;
     }
 
-    public MusicaBuilder ComBandaId(Banda banda)
+    public MusicaBuilder ComBanda(Banda banda)
     {
         Banda = banda;
         return this;
