@@ -20,19 +20,16 @@ public class BandaConfiguration : IEntityTypeConfiguration<Banda>
 
         builder.Property(x => x.Descricao)
             .HasColumnName("descricao")
-            .HasColumnType("varchar(5000)")
-            .IsRequired();
+            .HasColumnType("varchar(5000)");
 
         builder.Property(x => x.DataDeCriacao)
             .HasColumnName("data_criacao")
             .HasColumnType("datetime")
-            .HasDefaultValueSql("getdate()")
-            .IsRequired();
+            .HasDefaultValueSql("getdate()");
 
         builder.Property(x => x.Imagem)
-            .HasColumnType("varchar(255)")
-            .HasColumnName("caminhoDaImagem")
-            .HasDefaultValue("");
+            .HasColumnType("varbinary(max)")
+            .HasColumnName("imagem");
 
         builder.Ignore(x => x.RuleLevelCascadeMode);
         builder.Ignore(x => x.ClassLevelCascadeMode);

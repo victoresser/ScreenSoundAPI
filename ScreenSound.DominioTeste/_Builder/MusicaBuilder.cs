@@ -8,7 +8,7 @@ namespace ScreenSound.DominioTeste._Builder;
 public class MusicaBuilder
 {
     protected int Id;
-    protected string Nome;
+    protected string? Nome;
     protected short Duracao;
     protected bool? Disponivel;
     protected Album Album;
@@ -30,7 +30,7 @@ public class MusicaBuilder
         };
     }
 
-    public MusicaBuilder ComNome(string nome)
+    public MusicaBuilder ComNome(string? nome)
     {
         Nome = nome;
         return this;

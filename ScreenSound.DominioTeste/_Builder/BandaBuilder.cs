@@ -7,7 +7,7 @@ namespace ScreenSound.DominioTeste._Builder;
 public class BandaBuilder
 {
     protected int Id;
-    protected string Nome;
+    protected string? Nome;
     protected string Descricao;
 
     public static BandaBuilder Novo()
@@ -21,7 +21,7 @@ public class BandaBuilder
         };
     }
 
-    public BandaBuilder ComNome(string nome)
+    public BandaBuilder ComNome(string? nome)
     {
         Nome = nome;
         return this;

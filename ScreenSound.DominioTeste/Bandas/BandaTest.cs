@@ -43,7 +43,7 @@ public class BandaTest
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void NaoDeveAlterarComNomeInvalido(string nomeInvalido)
+    public void NaoDeveAlterarComNomeInvalido(string? nomeInvalido)
     {
         var banda = BandaBuilder.Novo().Build();
 
@@ -101,7 +101,7 @@ public class BandaTest
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void NaoDeveCriarComNomeInvalido(string nomeInvalido)
+    public void NaoDeveCriarComNomeInvalido(string? nomeInvalido)
     {
         var banda = BandaBuilder.Novo().ComNome(nomeInvalido).Build();
 

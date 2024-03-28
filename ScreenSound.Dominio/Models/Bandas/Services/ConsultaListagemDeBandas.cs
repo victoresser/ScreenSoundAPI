@@ -1,8 +1,9 @@
 ﻿using ScreenSound.Dominio.Interfaces.Consultas;
 using ScreenSound.Dominio.Interfaces.Conversores;
 using ScreenSound.Dominio.Interfaces.Repositorios;
+using ScreenSound.Dominio.Models.Bandas.Dto;
 
-namespace ScreenSound.Dominio.Models.Bandas.Dto;
+namespace ScreenSound.Dominio.Models.Bandas.Services;
 
 public class ConsultaListagemDeBandas : IConsultaListagemDeBandas
 {
@@ -46,7 +47,7 @@ public class ConsultaListagemDeBandas : IConsultaListagemDeBandas
             Nome = consulta.Nome,
             Descricao = consulta.Descricao,
             Albuns = _conversor.ConverterParaListagemDeAlbuns(consulta.AlbunsDaBanda),
-            Imagem = consulta.Imagem
+            Imagem = $"data:image/png;base64,{Convert.ToBase64String(consulta.Imagem ?? Array.Empty<byte>())}"
         };
 
         return dto;
@@ -59,7 +60,7 @@ public class ConsultaListagemDeBandas : IConsultaListagemDeBandas
         Nome = x.Nome,
         Descricao = x.Descricao,
         Albuns = _conversor.ConverterParaListagemDeAlbuns(x.AlbunsDaBanda),
-        Imagem = x.Imagem
+        Imagem = $"data:image/png;base64,{Convert.ToBase64String(x.Imagem ?? Array.Empty<byte>())}"
 
     }).ToList();
 }

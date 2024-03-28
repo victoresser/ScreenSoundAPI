@@ -9,6 +9,7 @@ using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns.Dto;
 using ScreenSound.Dominio.Models.Albuns.Services;
 using ScreenSound.Dominio.Models.Bandas.Dto;
+using ScreenSound.Dominio.Models.Bandas.Services;
 using ScreenSound.Dominio.Models.Musicas.Dto;
 using ScreenSound.Dominio.Models.Musicas.Services;
 

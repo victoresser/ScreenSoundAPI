@@ -5,5 +5,5 @@ namespace ScreenSound.Dominio.Interfaces.Repositorios;
 public interface IBandaRepositorio : IRepositorio<Banda>
 {
     Task<Banda> ObterPorIdAsync(int id);
-    Task<Banda> ObterPorNome(string nome);
+    Task<Banda?> ObterPorNome(string? nome);
 }

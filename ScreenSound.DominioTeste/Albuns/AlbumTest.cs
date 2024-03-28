@@ -40,7 +40,7 @@ public class AlbumTest
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void NaoDeveAlterarNomeInvalido(string nomeInvalido)
+    public void NaoDeveAlterarNomeInvalido(string? nomeInvalido)
     {
         var album = AlbumBuilder.Novo().Build();
 

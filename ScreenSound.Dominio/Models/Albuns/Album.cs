@@ -13,14 +13,14 @@ public class Album : Entity<Album>
     public DateTime DataDeCriacao { get; set; }
     public virtual ICollection<Musica>? MusicasDoAlbum { get; set; }
 
-    public Album(string nome, int bandaId, string? imagem = "")
+    public Album(string? nome, int bandaId, string? imagem = "")
     {
         Nome = nome;
         BandaId = bandaId;
         Imagem = imagem;
     }
 
-    public void AlterarNome(string nome)
+    public void AlterarNome(string? nome)
     {
         Nome = nome;
         Validar();

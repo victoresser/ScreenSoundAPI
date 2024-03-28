@@ -3,6 +3,7 @@ using ScreenSound.Dominio._Base;
 using ScreenSound.Dominio.Interfaces.Armazenadores;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Bandas.Dto;
+using ScreenSound.Dominio.Models.Bandas.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -67,7 +68,7 @@ namespace ScreenSound.API.Controllers
         /// <param name="imagem">URL da imagem de capa da banda</param>
         /// <returns></returns>
         [HttpPost("adicionarBanda")]
-        public async Task<IActionResult> Post(CreateBandaDto dto, [FromServices] IArmazenadorBanda armazenadorBanda)
+        public async Task<IActionResult> Post([FromBody] CreateBandaDto dto, [FromServices] IArmazenadorBanda armazenadorBanda)
         {
             await armazenadorBanda.Armazenar(dto);
             return Ok(await Get(nomeBanda: dto.Nome));

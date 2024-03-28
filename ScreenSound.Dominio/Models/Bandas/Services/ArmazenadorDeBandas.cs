@@ -1,9 +1,11 @@
-﻿using OpenAI_API;
+﻿using System.Text.RegularExpressions;
+using OpenAI_API;
 using ScreenSound.Dominio._Base;
 using ScreenSound.Dominio.Interfaces.Armazenadores;
 using ScreenSound.Dominio.Interfaces.Repositorios;
+using ScreenSound.Dominio.Models.Bandas.Dto;
 
-namespace ScreenSound.Dominio.Models.Bandas.Dto;
+namespace ScreenSound.Dominio.Models.Bandas.Services;
 
 public class ArmazenadorDeBandas : IArmazenadorBanda
 {
@@ -19,17 +21,19 @@ public class ArmazenadorDeBandas : IArmazenadorBanda
     private static string GetRespostaBanda(string nome)
     {
         Chat?.AppendSystemMessage($"Resuma a banda {nome} em 1 parágrafo. Adote uma linguagem informal.");
-        return Chat.GetResponseFromChatbotAsync().GetAwaiter().GetResult();
+        return Chat?.GetResponseFromChatbotAsync().GetAwaiter().GetResult() ?? string.Empty;
     }
 
     private static string GetDataBanda(string nome)
     {
         Chat?.AppendSystemMessage($"Responda apenas com o número do ano: Em qual ano a banda {nome} foi criada?");
-        return Chat.GetResponseFromChatbotAsync().GetAwaiter().GetResult();
+        return Chat?.GetResponseFromChatbotAsync().GetAwaiter().GetResult() ?? string.Empty;
     }
 
     public async Task<string> Armazenar(CreateBandaDto dto)
     {
+        var imagemBase64 = Array.Empty<byte>();
+
         if (dto == null)
             throw new ArgumentNullException(nameof(dto), Resource.BandaInvalida);
 
@@ -47,7 +51,13 @@ public class ArmazenadorDeBandas : IArmazenadorBanda
         if (bandaSalva != null)
             throw new ArgumentException(Resource.BandaJaExiste);
 
-        Banda newBanda = new(dto.Nome, dto.Descricao, dto.Imagem);
+        if (!string.IsNullOrEmpty(dto.Imagem))
+        {
+            var base64Formatado = Regex.Replace(dto.Imagem, "(data:image/png|base64|,|:|;)", string.Empty);
+            imagemBase64 = Convert.FromBase64String(base64Formatado);
+        }
+
+        Banda newBanda = new(dto.Nome, dto.Descricao, imagemBase64);
         await _bandaRepositorio.Adicionar(newBanda);
 
         return Resource.BandaCriada;

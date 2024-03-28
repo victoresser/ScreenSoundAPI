@@ -27,7 +27,7 @@ public class MusicaRepositorio : RepositorioBase<Musica>, IMusicaRepositorio
             .ToListAsync();
     }
 
-    public async Task<Musica?> ObterPorNome(string nome)
+    public async Task<Musica?> ObterPorNome(string? nome)
     {
         return await Context.Set<Musica>()
             .Include(x => x.Banda)

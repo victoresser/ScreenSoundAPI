@@ -28,7 +28,7 @@ public class AlbumRepositorio : RepositorioBase<Album>, IAlbumRepositorio
         ;
     }
 
-    public async Task<Album?> ObterPorNome(string nome)
+    public async Task<Album?> ObterPorNome(string? nome)
     {
         return await Context.Set<Album>()
             .Include(x => x.Banda)

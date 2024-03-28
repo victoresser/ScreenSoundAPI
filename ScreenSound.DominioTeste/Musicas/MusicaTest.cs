@@ -40,7 +40,7 @@ public class MusicaTest
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void NaoDeveAlterarNomeInvalido(string nomeInvalido)
+    public void NaoDeveAlterarNomeInvalido(string? nomeInvalido)
     {
         var musica = MusicaBuilder.Novo().Build();
 

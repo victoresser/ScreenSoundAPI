@@ -16,7 +16,7 @@ public class Musica : Entity<Musica>
     public virtual Album Album { get; set; }
     public virtual Banda Banda { get; set; }
 
-    public Musica(string nome, short duracao, int albumId, int bandaId, bool? disponivel = false, string? imagem = "")
+    public Musica(string? nome, short duracao, int albumId, int bandaId, bool? disponivel = false, string? imagem = "")
     {
         Nome = nome;
         Duracao = duracao;
@@ -26,7 +26,7 @@ public class Musica : Entity<Musica>
         Imagem = imagem;
     }
 
-    public void AlterarNome(string nome)
+    public void AlterarNome(string? nome)
     {
         Nome = nome;
         Validar();

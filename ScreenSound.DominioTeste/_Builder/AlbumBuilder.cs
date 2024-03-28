@@ -7,7 +7,7 @@ namespace ScreenSound.DominioTeste._Builder;
 public class AlbumBuilder
 {
     protected int Id;
-    protected string Nome;
+    protected string? Nome;
     protected Banda Banda;
     protected string? Imagem;
 
@@ -22,7 +22,7 @@ public class AlbumBuilder
         };
     }
 
-    public AlbumBuilder ComNome(string nome)
+    public AlbumBuilder ComNome(string? nome)
     {
         Nome = nome;
         return this;

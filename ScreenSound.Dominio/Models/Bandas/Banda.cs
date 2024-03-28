@@ -9,18 +9,18 @@ public class Banda : Entity<Banda>
 {
     public string? Descricao { get; set; }
     public DateTime DataDeCriacao { get; set; }
-    public string? Imagem { get; set; }
+    public byte[]? Imagem { get; set; }
     public virtual ICollection<Album>? AlbunsDaBanda { get; set; }
     public virtual ICollection<Musica>? MusicasDaBanda { get; set; }
 
-    public Banda(string nome, string? descricao = "", string? imagem = "")
+    public Banda(string? nome, string? descricao = "", byte[]? imagem = null)
     {
         Nome = nome;
         Descricao = descricao;
         Imagem = imagem;
     }
 
-    public void AlterarNome(string nome)
+    public void AlterarNome(string? nome)
     {
         Nome = nome;
         Validar();

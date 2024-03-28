@@ -20,19 +20,19 @@ public class ArmazenadorDeAlbuns : IArmazenadorAlbum
     {
         var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
         var album = await _albumRepositorio.ObterPorNome(dto.Nome);
-
+        
+        if (!string.IsNullOrEmpty(dto.Nome) && dto.Nome.Length > 255)
+            throw new ArgumentException(Resource.NomeAlbumInvalido);
+        
         if (banda == null)
             throw new ArgumentException(Resource.BandaInexistente);
 
-        if (album.Nome == dto.Nome)
+        if (album != null && album.Nome == dto.Nome)
             throw new ArgumentException(Resource.AlbumExistente);
-
-        if (!string.IsNullOrEmpty(dto.Nome) && dto.Nome.Length > 255)
-            throw new ArgumentException(Resource.NomeAlbumInvalido);
-
+        
         var newAlbum = new Album(dto.Nome, banda.Id, dto.Imagem);
         await _albumRepositorio.Adicionar(newAlbum);
-        
+
         return Resource.AlbumCriado;
     }
 

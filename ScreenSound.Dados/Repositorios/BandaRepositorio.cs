@@ -27,12 +27,12 @@ public class BandaRepositorio : RepositorioBase<Banda>, IBandaRepositorio
             .FirstAsync();
     }
 
-    public async Task<Banda?> ObterPorNome(string nome)
+    public async Task<Banda?> ObterPorNome(string? nome)
     {
         return await Context.Set<Banda>()
             .Where(x => x.Nome == nome)
             .Include(x => x.AlbunsDaBanda)
             .Include(x => x.MusicasDaBanda)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync() ?? null;
     }
 }
