@@ -28,9 +28,8 @@ public class AlbumConfiguration : IEntityTypeConfiguration<Album>
             .IsRequired();
 
         builder.Property(x => x.Imagem)
-            .HasColumnType("varchar(255)")
-            .HasColumnName("caminhoDaImagem")
-            .HasDefaultValue("");
+            .HasColumnType("varbinary(max)")
+            .HasColumnName("imagem");
 
         builder
             .HasOne(x => x.Banda)

@@ -32,10 +32,16 @@ namespace ScreenSound.Dados.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
+            migrationBuilder.DropColumn(
+                name: "imagem", 
+                table:"bandas");
+            
+            migrationBuilder.AddColumn<byte[]>(
                 name: "imagem",
                 table: "bandas",
-                newName: "caminhoDaImagem");
+                nullable: true,
+                type: "varchar(255)",
+                defaultValue: "");
 
             migrationBuilder.AlterColumn<string>(
                 name: "descricao",
@@ -45,16 +51,6 @@ namespace ScreenSound.Dados.Migrations
                 defaultValue: "",
                 oldClrType: typeof(string),
                 oldType: "varchar(5000)",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "caminhoDaImagem",
-                table: "bandas",
-                type: "varchar(255)",
-                nullable: true,
-                defaultValue: "",
-                oldClrType: typeof(byte[]),
-                oldType: "varbinary(max)",
                 oldNullable: true);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using OpenAI_API;
 using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Dominio.Interfaces.Armazenadores;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Bandas.Dto;
@@ -10,12 +11,14 @@ namespace ScreenSound.Dominio.Models.Bandas.Services;
 public class ArmazenadorDeBandas : IArmazenadorBanda
 {
     private readonly IBandaRepositorio _bandaRepositorio;
+    private readonly IBase64Cleaner _base64Cleaner;
     private static readonly OpenAIAPI Client = new("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");
     private static readonly OpenAI_API.Chat.Conversation? Chat = Client.Chat.CreateConversation();
 
-    public ArmazenadorDeBandas(IBandaRepositorio bandaRepositorio)
+    public ArmazenadorDeBandas(IBandaRepositorio bandaRepositorio, IBase64Cleaner base64Cleaner)
     {
         _bandaRepositorio = bandaRepositorio;
+        _base64Cleaner = base64Cleaner;
     }
 
     private static string GetRespostaBanda(string nome)
@@ -53,8 +56,10 @@ public class ArmazenadorDeBandas : IArmazenadorBanda
 
         if (!string.IsNullOrEmpty(dto.Imagem))
         {
-            var base64Formatado = Regex.Replace(dto.Imagem, "(data:image/png|base64|,|:|;)", string.Empty);
-            imagemBase64 = Convert.FromBase64String(base64Formatado);
+            // var base64Formatado = Regex.Replace(dto.Imagem, "(data|image|/png|/webpg|/jpg|/jpeg|base64|,|:|;)", string.Empty);
+            // imagemBase64 = Convert.FromBase64String(base64Formatado);
+
+            imagemBase64 = _base64Cleaner.ConverterStringBase64ParaBytes(dto.Imagem);
         }
 
         Banda newBanda = new(dto.Nome, dto.Descricao, imagemBase64);

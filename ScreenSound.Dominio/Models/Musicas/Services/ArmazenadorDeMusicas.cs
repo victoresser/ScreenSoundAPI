@@ -1,29 +1,44 @@
 ﻿using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Dominio.Interfaces.Armazenadores;
 using ScreenSound.Dominio.Interfaces.Repositorios;
-using ScreenSound.Dominio.Models.Albuns;
-using ScreenSound.Dominio.Models.Bandas;
+using ScreenSound.Dominio.Models.Musicas.Dto;
 
-namespace ScreenSound.Dominio.Models.Musicas.Dto;
+namespace ScreenSound.Dominio.Models.Musicas.Services;
 
 public class ArmazenadorDeMusicas : IArmazenadorMusica
 {
     private readonly IMusicaRepositorio _musicaRepositorio;
     private readonly IBandaRepositorio _bandaRepositorio;
     private readonly IAlbumRepositorio _albumRepositorio;
+    private readonly IBase64Cleaner _base64Cleaner;
 
     public ArmazenadorDeMusicas(IMusicaRepositorio musicaRepositorio, IBandaRepositorio bandaRepositorio,
-        IAlbumRepositorio albumRepositorio)
+        IAlbumRepositorio albumRepositorio, IBase64Cleaner base64Cleaner)
     {
         _musicaRepositorio = musicaRepositorio;
         _bandaRepositorio = bandaRepositorio;
         _albumRepositorio = albumRepositorio;
+        _base64Cleaner = base64Cleaner;
     }
 
     public async Task<string> Armazenar(CreateMusicaDto dto)
     {
+        byte[]? imagemBase64 = null;
+
+        if (string.IsNullOrWhiteSpace(dto.Nome))
+            throw new ArgumentException("Erro | O nome da música não pode ser nulo ou vazio.");
+
         var musicaJaSalva = await _musicaRepositorio.ObterPorNome(dto.Nome);
+
+        if (string.IsNullOrWhiteSpace(dto.NomeAlbum))
+            throw new ArgumentException("Erro | O nome da álbum não pode ser nulo ou vazio.");
+
         var album = await _albumRepositorio.ObterPorNome(dto.NomeAlbum);
+
+        if (string.IsNullOrWhiteSpace(dto.NomeBanda))
+            throw new ArgumentException("Erro | O nome da banda não pode ser nulo ou vazio.");
+
         var banda = await _bandaRepositorio.ObterPorNome(dto.NomeBanda);
 
         if (musicaJaSalva != null && musicaJaSalva.Nome == dto.Nome)
@@ -38,12 +53,16 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
         if (dto.Nome != null && dto.Nome.Length > 255)
             throw new ArgumentException(Resource.NomeAlbumInvalido);
 
-        if (string.IsNullOrWhiteSpace(dto.Nome))
-            throw new ArgumentException(
-                "Erro | O nome da música não pode estar vazio."
-            );
+        if (!string.IsNullOrEmpty(dto.Imagem))
+            imagemBase64 = _base64Cleaner.ConverterStringBase64ParaBytes(dto.Imagem);
 
-        var musica = new Musica(dto.Nome, dto.Duracao, album.Id, banda.Id, dto.Disponibilidade, dto.Imagem);
+        var musica = new Musica(
+            dto.Nome ?? string.Empty,
+            dto.Duracao,
+            album.Id,
+            banda.Id,
+            dto.Disponibilidade,
+            imagemBase64 ?? null);
 
         await _musicaRepositorio.Adicionar(musica);
         return Resource.MusicaCriada;
@@ -85,8 +104,9 @@ public class ArmazenadorDeMusicas : IArmazenadorMusica
         musica.AlterarDisponibilidade(dto.DisponibilidadeMusica);
         await Console.Out.WriteLineAsync($"A disponibilidade desta música foi alterarada para {musica.Disponivel}");
 
-        if (string.IsNullOrEmpty(dto.Imagem)) return "Música editada com sucesso!";
-        musica.AlterarImagem(dto.Imagem);
+        if (dto.Imagem == null) return "Música editada com sucesso!";
+        
+        musica.AlterarImagem(_base64Cleaner.ConverterStringBase64ParaBytes(dto.Imagem));
         await Console.Out.WriteLineAsync($"O caminho da imagem desta música foi alterado para {musica.Imagem}");
 
         return "Música editada com sucesso!";

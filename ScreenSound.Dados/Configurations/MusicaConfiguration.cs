@@ -38,9 +38,8 @@ public class MusicaConfiguration : IEntityTypeConfiguration<Musica>
             .HasColumnName("album_id");
 
         builder.Property(x => x.Imagem)
-            .HasColumnType("varchar(255)")
-            .HasColumnName("caminhoDaImagem")
-            .HasDefaultValue("");
+            .HasColumnType("varbinary(max)")
+            .HasColumnName("imagem");
 
         builder.HasOne(x => x.Album)
             .WithMany(x => x.MusicasDoAlbum)

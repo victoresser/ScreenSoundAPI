@@ -12,11 +12,11 @@ public class Musica : Entity<Musica>
     public DateTime DataDeCriacao { get; set; }
     public int AlbumId { get; set; }
     public int BandaId { get; set; }
-    public string? Imagem { get; set; }
-    public virtual Album Album { get; set; }
-    public virtual Banda Banda { get; set; }
+    public byte[]? Imagem { get; set; }
+    public virtual Album? Album { get; set; }
+    public virtual Banda? Banda { get; set; }
 
-    public Musica(string? nome, short duracao, int albumId, int bandaId, bool? disponivel = false, string? imagem = "")
+    public Musica(string nome, short duracao, int albumId, int bandaId, bool? disponivel = false, byte[]? imagem = null)
     {
         Nome = nome;
         Duracao = duracao;
@@ -26,7 +26,7 @@ public class Musica : Entity<Musica>
         Imagem = imagem;
     }
 
-    public void AlterarNome(string? nome)
+    public void AlterarNome(string nome)
     {
         Nome = nome;
         Validar();
@@ -56,7 +56,7 @@ public class Musica : Entity<Musica>
         Validar();
     }
 
-    public void AlterarImagem(string? imagem)
+    public void AlterarImagem(byte[] imagem)
     {
         Imagem = imagem;
         Validar();

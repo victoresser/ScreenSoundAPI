@@ -2,6 +2,7 @@
 using ExpectedObjects;
 using Moq;
 using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Bandas;
 using ScreenSound.Dominio.Models.Bandas.Dto;
@@ -21,7 +22,8 @@ public class ArmazenadorDeBandasTest
         _faker = new Faker();
 
         _mockRepositorioBanda = new Mock<IBandaRepositorio>();
-        _armazenadorBanda = new ArmazenadorDeBandas(_mockRepositorioBanda.Object);
+        Mock<IBase64Cleaner> mockBase64Cleaner = new();
+        _armazenadorBanda = new ArmazenadorDeBandas(_mockRepositorioBanda.Object, mockBase64Cleaner.Object);
     }
 
     [Fact]

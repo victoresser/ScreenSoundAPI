@@ -1,4 +1,5 @@
-﻿using ScreenSound.Dominio.Interfaces.Consultas;
+﻿using ScreenSound.Dominio.Interfaces;
+using ScreenSound.Dominio.Interfaces.Consultas;
 using ScreenSound.Dominio.Interfaces.Conversores;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns.Dto;
@@ -9,11 +10,14 @@ public class ConsultaListagemDeAlbuns : IConsultaListagemDeAlbuns
 {
     private readonly IAlbumRepositorio _albumRepositorio;
     private readonly IConversorMusicasDoAlbum _conversor;
+    private readonly IBase64Cleaner _base64Cleaner;
 
-    public ConsultaListagemDeAlbuns(IAlbumRepositorio albumRepositorio, IConversorMusicasDoAlbum conversor)
+    public ConsultaListagemDeAlbuns(IAlbumRepositorio albumRepositorio, IConversorMusicasDoAlbum conversor,
+        IBase64Cleaner base64Cleaner)
     {
         _albumRepositorio = albumRepositorio;
         _conversor = conversor;
+        _base64Cleaner = base64Cleaner;
     }
 
     public async Task<IEnumerable<ListagemDeAlbuns>> RetornaListagemDeAlbuns(string? nomeAlbum, int skip, int take)
@@ -22,9 +26,9 @@ public class ConsultaListagemDeAlbuns : IConsultaListagemDeAlbuns
 
         var dto = MapearAlbum(albuns).Skip(skip).Take(take);
 
-        return !string.IsNullOrEmpty(nomeAlbum) 
-            ? dto.Where(x => x.Nome.Contains(nomeAlbum))
-            : dto;
+        return string.IsNullOrEmpty(nomeAlbum)
+            ? dto
+            : dto.Where(x => x.Nome.Contains(nomeAlbum));
     }
 
     public async Task<ListagemDeAlbuns> RetornaListagemDeAlbunsPorId(int id)
@@ -37,7 +41,7 @@ public class ConsultaListagemDeAlbuns : IConsultaListagemDeAlbuns
         var dto = new ListagemDeAlbuns
         {
             Nome = album.Nome,
-            Banda = album.Banda.Nome,
+            Banda = album.Banda?.Nome,
             Musicas = _conversor.ConverterParaListagemDeMusicas(album?.MusicasDoAlbum)
         };
 
@@ -50,7 +54,7 @@ public class ConsultaListagemDeAlbuns : IConsultaListagemDeAlbuns
         {
             Id = x.Id,
             Nome = x.Nome,
-            Imagem = x.Imagem,
+            Imagem = _base64Cleaner.ConverterBytesParaStringBase64(x.Imagem),
             BandaId = x.BandaId,
             Banda = x.Banda?.Nome ?? string.Empty,
             Musicas = _conversor.ConverterParaListagemDeMusicas(x.MusicasDoAlbum)

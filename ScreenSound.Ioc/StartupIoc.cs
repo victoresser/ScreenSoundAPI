@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ScreenSound.Dados;
 using ScreenSound.Dados.Repositorios;
+using ScreenSound.Dominio._Base;
 using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Dominio.Interfaces.Armazenadores;
 using ScreenSound.Dominio.Interfaces.Consultas;
@@ -29,6 +30,7 @@ public static class StartupIoc
         services.AddScoped<IConversorAlbunsDaBanda, ConversorAlbunsDaBanda>();
         services.AddScoped<IConversorMusicasDoAlbum, ConversorMusicasDoAlbum>();
         services.AddScoped<IConsultaListagemDeMusicas, ConsultaListagemDeMusicas>();
+        services.AddScoped<IBase64Cleaner, Base64Cleaner>();
         services.AddScoped<ConsultaListagemDeAlbuns>();
         services.AddScoped<ConsultaListagemDeBandas>();
     }

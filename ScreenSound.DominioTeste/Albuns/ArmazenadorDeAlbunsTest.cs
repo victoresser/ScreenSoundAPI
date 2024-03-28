@@ -2,6 +2,7 @@
 using FluentValidation.TestHelper;
 using Moq;
 using ScreenSound.Dominio._Base;
+using ScreenSound.Dominio.Interfaces;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Albuns;
 using ScreenSound.Dominio.Models.Albuns.Dto;
@@ -20,9 +21,11 @@ public class ArmazenadorDeAlbunsTest
     public ArmazenadorDeAlbunsTest()
     {
         _faker = new Faker();
+        var mockBase64Cleaner = new Mock<IBase64Cleaner>();
         _mockAlbumRepositorio = new Mock<IAlbumRepositorio>();
         _mockBandaRepositorio = new Mock<IBandaRepositorio>();
-        _armazenadorDeAlbuns = new ArmazenadorDeAlbuns(_mockAlbumRepositorio.Object, _mockBandaRepositorio.Object);
+        _armazenadorDeAlbuns = new ArmazenadorDeAlbuns(_mockAlbumRepositorio.Object, _mockBandaRepositorio.Object,
+                                                        mockBase64Cleaner.Object);
     }
 
     [Fact]

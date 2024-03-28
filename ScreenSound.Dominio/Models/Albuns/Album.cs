@@ -8,19 +8,19 @@ namespace ScreenSound.Dominio.Models.Albuns;
 public class Album : Entity<Album>
 {
     public int BandaId { get; set; }
-    public string? Imagem { get; set; }
-    public virtual Banda Banda { get; set; }
+    public byte[]? Imagem { get; set; }
+    public virtual Banda? Banda { get; set; }
     public DateTime DataDeCriacao { get; set; }
     public virtual ICollection<Musica>? MusicasDoAlbum { get; set; }
 
-    public Album(string? nome, int bandaId, string? imagem = "")
+    public Album(string nome, int bandaId, byte[]? imagem = null)
     {
         Nome = nome;
         BandaId = bandaId;
         Imagem = imagem;
     }
 
-    public void AlterarNome(string? nome)
+    public void AlterarNome(string nome)
     {
         Nome = nome;
         Validar();
@@ -32,7 +32,7 @@ public class Album : Entity<Album>
         Validar();
     }
 
-    public void AlterarImagem(string imagem)
+    public void AlterarImagem(byte[] imagem)
     {
         Imagem = imagem;
         Validar();

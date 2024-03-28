@@ -1,4 +1,5 @@
-﻿using ScreenSound.Dominio.Interfaces.Consultas;
+﻿using ScreenSound.Dominio.Interfaces;
+using ScreenSound.Dominio.Interfaces.Consultas;
 using ScreenSound.Dominio.Interfaces.Repositorios;
 using ScreenSound.Dominio.Models.Musicas.Dto;
 
@@ -7,10 +8,12 @@ namespace ScreenSound.Dominio.Models.Musicas.Services;
 public class ConsultaListagemDeMusicas : IConsultaListagemDeMusicas
 {
     private readonly IMusicaRepositorio _musicaRepositorio;
+    private readonly IBase64Cleaner _base64Cleaner;
 
-    public ConsultaListagemDeMusicas(IMusicaRepositorio musicaRepositorio)
+    public ConsultaListagemDeMusicas(IMusicaRepositorio musicaRepositorio, IBase64Cleaner base64Cleaner)
     {
         _musicaRepositorio = musicaRepositorio;
+        _base64Cleaner = base64Cleaner;
     }
 
     public async Task<IEnumerable<ListagemDeMusicas>> RetornaListagemDeMusicas(string? nomeMusica = null,
@@ -41,23 +44,23 @@ public class ConsultaListagemDeMusicas : IConsultaListagemDeMusicas
             Nome = consulta.Nome,
             Duracao = consulta.Duracao,
             Disponivel = consulta.Disponivel,
-            Banda = consulta.Banda.Nome,
-            Album = consulta.Album.Nome,
-            Imagem = consulta.Imagem
+            Banda = consulta.Banda?.Nome,
+            Album = consulta.Album?.Nome,
+            Imagem = _base64Cleaner.ConverterBytesParaStringBase64(consulta.Imagem)
         };
 
         return dto;
     }
 
-    private static IEnumerable<ListagemDeMusicas> MapearMusicas(IEnumerable<Musica> musicas, int skip, int take)
+    private IEnumerable<ListagemDeMusicas> MapearMusicas(IEnumerable<Musica> musicas, int skip, int take)
         => musicas.Select(x => new ListagemDeMusicas
         {
             Id = x.Id,
             Nome = x.Nome,
-            Imagem = x.Imagem,
+            Imagem = _base64Cleaner.ConverterBytesParaStringBase64(x.Imagem),
             Duracao = x.Duracao,
-            Banda = x.Banda.Nome,
-            Album = x.Album.Nome,
+            Banda = x.Banda?.Nome,
+            Album = x.Album?.Nome,
             Disponivel = x.Disponivel
         }).Skip(skip).Take(take).OrderBy(x => x.Nome).ToList();
 }
